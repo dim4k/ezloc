@@ -2,8 +2,22 @@ version: '3.8'
 
 services:
   app:
-    container_name: location-ile-aux-moines
-    build: .
+    container_name: ezloc
+    build:
+      context: .
+      args:
+        SEO_TITLE: "Villa Paradiso - Location de vacances"
+        SEO_DESCRIPTION: "Bienvenue à la Villa Paradiso. Une demeure d'exception pour 8 personnes."
+        SEO_URL: "https://example.com/"
+        SEO_IMAGE: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=2070&auto=format&fit=crop"
+        SEO_FAVICON: "./img/favicon.png"
+        SEO_PRICE_RANGE: "1000€ - 3000€"
+        SEO_PHONE: "+33 6 00 00 00 00"
+        SEO_LAT: "43.7102"
+        SEO_LNG: "7.2620"
+        SEO_ADDRESS_STREET: "123 Avenue de la Mer"
+        SEO_ADDRESS_ZIP: "06000"
+        SEO_ADDRESS_LOCALITY: "Nice, France"
     ports:
       - "8090:8090"
     volumes:

@@ -24,7 +24,7 @@ export class HeroSection extends BaseComponent {
             <div class="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
                 <!-- Background Image with Overlay -->
                 <div class="absolute inset-0 z-0">
-                    <img src="${this.config.hero.image}" class="hero-image w-full h-full object-cover object-center scale-105 blur-sm transition-transform duration-75 ease-out" alt="Vue Ile aux moines">
+                    <img src="${this.config.hero.image}" class="hero-image w-full h-full object-cover object-center scale-105 blur-sm transition-transform duration-75 ease-out" alt="${this.config.hero.title}">
                     <div class="absolute inset-0 bg-gradient-to-b from-breizh-navy/40 to-breizh-navy/70"></div>
                 </div>
                 

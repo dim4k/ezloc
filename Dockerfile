@@ -25,6 +25,35 @@ FROM alpine:latest
 # PocketBase Version
 ARG PB_VERSION=0.22.21
 
+# SEO Build Arguments
+ARG SEO_TITLE="Maison de Vacances"
+ARG SEO_DESCRIPTION=""
+ARG SEO_URL=""
+ARG SEO_IMAGE=""
+ARG SEO_FAVICON="img/favicon.png"
+ARG SEO_PRICE_RANGE=""
+ARG SEO_PHONE=""
+ARG SEO_LAT="0"
+ARG SEO_LNG="0"
+ARG SEO_ADDRESS_STREET=""
+ARG SEO_ADDRESS_ZIP=""
+ARG SEO_ADDRESS_LOCALITY=""
+
+# Persist as Environment Variables
+ENV SEO_TITLE=$SEO_TITLE \
+    SEO_DESCRIPTION=$SEO_DESCRIPTION \
+    SEO_URL=$SEO_URL \
+    SEO_IMAGE=$SEO_IMAGE \
+    SEO_FAVICON=$SEO_FAVICON \
+    SEO_PRICE_RANGE=$SEO_PRICE_RANGE \
+    SEO_PHONE=$SEO_PHONE \
+    SEO_LAT=$SEO_LAT \
+    SEO_LNG=$SEO_LNG \
+    SEO_ADDRESS_STREET=$SEO_ADDRESS_STREET \
+    SEO_ADDRESS_ZIP=$SEO_ADDRESS_ZIP \
+    SEO_ADDRESS_LOCALITY=$SEO_ADDRESS_LOCALITY
+
+
 # 1. Install dependencies
 RUN apk add --no-cache unzip ca-certificates wget jq
 
@@ -44,7 +73,9 @@ COPY js /pb_public/js
 COPY --from=builder /app/css/style.css /pb_public/css/style.css
 
 # Copy config for SEO injection
-COPY setup/config.json /pb_public/config.json
+# Config is optional. If not present, SEO injection is skipped (handled in entrypoint.sh).
+# We do not copy it here to avoid build errors in CI/CD where config.json is missing.
+
 
 # Create img directory
 RUN mkdir -p /pb_public/img
