@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const PB_URL = process.env.PB_URL || 'http://127.0.0.1:8090';
+const PB_URL = process.env.PB_URL || 'http://192.168.1.62:8090';
 const ADMIN_EMAIL = process.argv[2];
 const ADMIN_PASS = process.argv[3];
 

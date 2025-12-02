@@ -1,5 +1,6 @@
 import { BaseComponent } from "./BaseComponent.js";
 import { parseICal, calculatePrice } from "../utils/BookingUtils.js";
+import { PB_URL } from "../cms.js";
 
 export class ContactSection extends BaseComponent {
     constructor() {
@@ -163,10 +164,7 @@ export class ContactSection extends BaseComponent {
 
         try {
             // Send to PocketBase
-            // We use the PB_URL from cms.js (need to import it or hardcode it if not available)
-            // Ideally we should import it, but for now let's hardcode or assume it's available.
-            // Let's use the hardcoded one for simplicity as we are in a component.
-            const PB_URL = "http://localhost:8090"; 
+            // We use the PB_URL from cms.js 
             
             const response = await fetch(`${PB_URL}/api/collections/messages/records`, {
                 method: "POST",

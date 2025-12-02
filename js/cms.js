@@ -1,6 +1,9 @@
 import { SITE_CONFIG } from "./config.js";
 
-export const PB_URL = "http://localhost:8090";
+// Auto-detect PocketBase URL
+// If served from the same origin (which is the case with PocketBase serving public dir), 
+// we can use the current origin.
+export const PB_URL = window.location.origin;
 
 /**
  * Initialize the CMS connection and update the SITE_CONFIG
