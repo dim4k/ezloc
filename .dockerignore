@@ -1,0 +1,9 @@
+node_modules
+.git
+.gitignore
+.env
+docker-compose.yml
+README.md
+GUIDE_UTILISATEUR.md
+pb_data
+pb_public

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{{SEO_TITLE}}</title>
+        <meta
+            name="description"
+            content="{{SEO_DESCRIPTION}}"
+        />
+        <link rel="icon" type="image/png" href="{{SEO_FAVICON}}" />
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="{{SEO_URL}}" />
+        <meta property="og:title" content="{{SEO_TITLE}}" />
+        <meta property="og:description" content="{{SEO_DESCRIPTION}}" />
+        <meta property="og:image" content="{{SEO_IMAGE}}" />
+
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="{{SEO_URL}}" />
+        <meta property="twitter:title" content="{{SEO_TITLE}}" />
+        <meta property="twitter:description" content="{{SEO_DESCRIPTION}}" />
+        <meta property="twitter:image" content="{{SEO_IMAGE}}" />
+
+        <!-- Structured Data (JSON-LD) -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "VacationRental",
+            "name": "{{SEO_TITLE}}",
+            "description": "{{SEO_DESCRIPTION}}",
+            "image": "{{SEO_IMAGE}}",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "{{SEO_ADDRESS_STREET}}",
+                "addressLocality": "{{SEO_ADDRESS_LOCALITY}}",
+                "postalCode": "{{SEO_ADDRESS_ZIP}}",
+                "addressCountry": "FR"
+            },
+            "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": {{SEO_LAT}},
+                "longitude": {{SEO_LNG}}
+            },
+            "url": "{{SEO_URL}}",
+            "telephone": "{{SEO_PHONE}}",
+            "priceRange": "{{SEO_PRICE_RANGE}}"
+        }
+        </script>
+
+        <!-- Tailwind CSS (Built via CLI) -->
+        <!-- <link rel="stylesheet" href="css/style.css" /> is already included below -->
+
+        <!-- Leaflet CSS & JS -->
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+        <!-- Google Fonts -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap"
+            rel="stylesheet"
+        />
+        
+        <!-- Lucide Icons -->
+        <script src="https://unpkg.com/lucide@latest"></script>
+
+        <!-- Flatpickr (Calendar) -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+
+        <!-- AOS (Animate On Scroll) -->
+        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+        <!-- Custom Styles -->
+        <link rel="stylesheet" href="css/style.css" />
+    </head>
+    <body class="bg-slate-50 font-sans text-slate-800 antialiased">
+        <!-- L'application est montée ici -->
+        <app-root></app-root>
+
+        <!-- Application Logic -->
+        <script type="module" src="js/app.js"></script>
+        <script>
+            // Initialize AOS after content is loaded
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(() => {
+                    AOS.init({
+                        duration: 800,
+                        once: true,
+                        offset: 100,
+                        easing: 'ease-out-cubic'
+                    });
+                }, 100);
+            });
+        </script>
+    </body>
+</html>

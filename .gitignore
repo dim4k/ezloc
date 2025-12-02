@@ -1,0 +1,18 @@
+# PocketBase Data
+pb_data/
+
+# Setup files
+setup/img/
+setup/config.json
+
+# System Files
+.DS_Store
+Thumbs.db
+*.log
+
+# Node
+node_modules/
+.env
+
+# Guides
+GUIDE_*

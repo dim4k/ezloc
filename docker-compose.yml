@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: location-ile-aux-moines
+    build: .
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./pb_data:/pb_data
+      - ./index.html:/pb_public/index.html
+      - ./css:/pb_public/css
+      - ./js:/pb_public/js
+      - ./pb_hooks:/pb_hooks
+    restart: unless-stopped

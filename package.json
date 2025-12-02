@@ -1,0 +1,12 @@
+{
+  "name": "location-ile-aux-moines",
+  "version": "1.0.0",
+  "description": "Vacation rental website with PocketBase CMS",
+  "scripts": {
+    "build:css": "tailwindcss -i ./css/input.css -o ./css/style.css --minify",
+    "watch:css": "tailwindcss -i ./css/input.css -o ./css/style.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}

@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Styles spécifiques non gérés par Tailwind */
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Masquer la scrollbar de la modale tout en gardant le scroll */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Leaflet Map Height Fix for Mobile */
+#leaflet-map {
+    z-index: 0;
+}
+
+/* Fix Leaflet Tile Rendering Issues */
+.leaflet-pane img,
+.leaflet-tile-container img {
+    max-width: none !important;
+    max-height: none !important;
+    padding: 0;
+    margin: 0;
+    transition: none !important; /* Safety: prevent global transitions from affecting tiles */
+}
+
+/* Fix for sub-pixel rendering lines */
+.leaflet-tile-container {
+    will-change: transform;
+}
+
+/* Image Gallery Smooth Transitions */
+img {
+    transition: transform 0.5s ease-out;
+}
+
+/* Modal Slider Improvements */
+dialog::backdrop {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Smooth scrolling for gallery thumbnails */
+.scroll-smooth {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Image hover effects */
+.group img {
+    will-change: transform;
+}
+
+/* Modal image container - maintain aspect ratio */
+dialog img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
+
+/* Modal dialog height fix on mobile */
+@media (max-height: 700px) {
+    dialog {
+        max-height: 95vh !important;
+    }
+}
+
+/* --- Airbnb-style Calendar Customization --- */
+.flatpickr-calendar {
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    border: none;
+    font-family: "Lato", sans-serif;
+    padding: 16px;
+}
+
+.flatpickr-months {
+    margin-bottom: 10px;
+}
+
+.flatpickr-month {
+    height: 40px;
+}
+
+.flatpickr-current-month {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b; /* breizh-navy */
+    padding-top: 0;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    font-weight: 700;
+}
+
+.flatpickr-weekdays {
+    margin-bottom: 8px;
+}
+
+.flatpickr-weekday {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.flatpickr-day {
+    border-radius: 50%;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected.inRange,
+.flatpickr-day.startRange.inRange,
+.flatpickr-day.endRange.inRange,
+.flatpickr-day.selected:focus,
+.flatpickr-day.startRange:focus,
+.flatpickr-day.endRange:focus,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover,
+.flatpickr-day.selected.prevMonthDay,
+.flatpickr-day.startRange.prevMonthDay,
+.flatpickr-day.endRange.prevMonthDay,
+.flatpickr-day.selected.nextMonthDay,
+.flatpickr-day.startRange.nextMonthDay,
+.flatpickr-day.endRange.nextMonthDay {
+    background: #1e293b; /* breizh-navy */
+    border-color: #1e293b;
+    color: #fff;
+}
+
+.flatpickr-day.inRange {
+    box-shadow: -5px 0 0 #f1f5f9, 5px 0 0 #f1f5f9;
+    background: #f1f5f9; /* slate-100 */
+    border-color: #f1f5f9;
+    color: #1e293b;
+}
+
+.flatpickr-day.today {
+    border-color: #eab308; /* accent */
+}
+
+.flatpickr-day.today:hover {
+    background: #eab308;
+    border-color: #eab308;
+    color: #fff;
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
+    color: #cbd5e1; /* slate-300 */
+    text-decoration: line-through;
+}
+
+/* Hide arrow icons and use custom ones if needed, or just style them */
+.flatpickr-prev-month,
+.flatpickr-next-month {
+    fill: #1e293b;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+    fill: #3b82f6; /* breizh-blue */
+}
+
+/* --- Global UI Polish --- */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Polished Button Style */
+.btn-primary {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(30, 41, 59, 0.3), 0 2px 4px -1px rgba(30, 41, 59, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(30, 41, 59, 0.3), 0 4px 6px -2px rgba(30, 41, 59, 0.15);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
