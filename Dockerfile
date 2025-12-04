@@ -80,6 +80,9 @@ COPY --from=builder /app/css/style.css /pb_public/css/style.css
 # Create img directory
 RUN mkdir -p /pb_public/img
 
+# Copy PocketBase Hooks
+COPY pb_hooks /pb_hooks
+
 # 5. Copy and setup Entrypoint Script
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
