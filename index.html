@@ -74,10 +74,20 @@
         <script src="js/vendor/leaflet.js" defer></script>
 
         <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link
             href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap"
             rel="stylesheet"
+            media="print"
+            onload="this.media='all'"
         />
+        <noscript>
+            <link
+                href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap"
+                rel="stylesheet"
+            />
+        </noscript>
         
         <!-- Lucide Icons -->
         <script src="js/vendor/lucide.js" defer></script>
@@ -94,6 +104,7 @@
         <script src="js/vendor/aos.js" defer></script>
 
         <!-- Custom Styles -->
+        <link rel="preload" href="css/style.css" as="style" />
         <link rel="stylesheet" href="css/style.css" />
     </head>
     <body class="bg-slate-50 font-sans text-slate-800 antialiased">

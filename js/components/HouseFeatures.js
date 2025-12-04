@@ -40,7 +40,7 @@ export class HouseFeatures extends BaseComponent {
             <section id="maison" class="py-24 bg-sand/30">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16">
-                        <span class="text-breizh-blue text-sm font-bold uppercase tracking-widest">${
+                        <span class="text-blue-700 text-sm font-bold uppercase tracking-widest">${
                             features.sectionTitle
                         }</span>
                         <h2 class="mt-3 text-4xl font-serif text-breizh-navy font-bold">${

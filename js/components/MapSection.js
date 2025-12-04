@@ -70,17 +70,17 @@ export class MapSection extends BaseComponent {
                     
                     <div class="space-y-6 inline-block md:block">
                         <div>
-                            <h4 class="font-bold text-accent text-sm uppercase tracking-wider mb-1">${
+                            <h3 class="font-bold text-accent text-sm uppercase tracking-wider mb-1">${
                                 map.addressTitle
-                            }</h4>
+                            }</h3>
                             <p class="text-lg opacity-90">${
                                 this.config.location.address
                             }</p>
                         </div>
                         <div>
-                            <h4 class="font-bold text-accent text-sm uppercase tracking-wider mb-1">${
+                            <h3 class="font-bold text-accent text-sm uppercase tracking-wider mb-1">${
                                 map.nearbyTitle
-                            }</h4>
+                            }</h3>
                             <ul class="text-slate-300 space-y-1">
                                 ${map.nearbyList
                                     .map((item) => `<li>• ${item}</li>`)

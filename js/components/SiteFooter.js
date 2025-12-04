@@ -13,8 +13,8 @@ export class SiteFooter extends BaseComponent {
                             <p class="text-slate-400 text-sm">${footer.location}</p>
                         </div>
                         
-                        <div class="text-center md:text-right text-slate-500 text-sm">
-                            &copy; ${year} ${footer.rights} | ${footer.credits} <a href="https://antoine.kim" target="_blank" class="text-slate-400 hover:text-white transition-colors">Antoine Kim</a>
+                        <div class="text-center md:text-right text-slate-300 text-sm">
+                            &copy; ${year} ${footer.rights} | ${footer.credits} <a href="https://antoine.kim" target="_blank" class="text-slate-300 hover:text-white transition-colors underline">Antoine Kim</a>
                         </div>
                     </div>
                 </div>
