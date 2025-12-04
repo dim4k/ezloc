@@ -19,14 +19,16 @@ export class ContactSection extends BaseComponent {
 
         try {
             // Use allorigins.win as a CORS proxy
+            // Add timestamp to prevent caching
             const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(
                 calendarUrl
-            )}`;
+            )}&t=${Date.now()}`;
             const response = await fetch(proxyUrl);
             const data = await response.json();
 
             if (data.contents) {
                 this.bookedDates = parseICal(data.contents);
+                console.log(`📅 Calendar parsed: ${this.bookedDates.length} booked days found.`);
                 this.initCalendars();
             }
         } catch (error) {
@@ -76,11 +78,19 @@ export class ContactSection extends BaseComponent {
         hiddenInput.className = "hidden"; // Ensure it stays hidden
         this.appendChild(hiddenInput);
 
+        // Convert dates to YYYY-MM-DD strings to avoid any timezone issues with Flatpickr
+        const disabledDates = this.bookedDates.map(d => {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        });
+
         const commonConfig = {
             locale: "fr",
             dateFormat: "Y-m-d",
             minDate: "today",
-            disable: this.bookedDates,
+            disable: disabledDates,
             disableMobile: false, // Force custom UI on mobile
             mode: "range",
             showMonths: window.innerWidth > 768 ? 2 : 1,
