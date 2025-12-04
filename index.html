@@ -10,6 +10,16 @@
         />
         <link rel="icon" type="image/png" href="{{SEO_FAVICON}}" />
 
+        <!-- Preload Critical Modules -->
+        <link rel="modulepreload" href="js/app.js">
+        <link rel="modulepreload" href="js/config.js">
+        <link rel="modulepreload" href="js/cms.js">
+        <link rel="modulepreload" href="js/components/BaseComponent.js">
+        <link rel="modulepreload" href="js/components/NavBar.js">
+        <link rel="modulepreload" href="js/components/HeroSection.js">
+        <link rel="modulepreload" href="js/components/DetailModal.js">
+        <link rel="modulepreload" href="js/utils/BookingUtils.js">
+
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website" />
         <meta property="og:url" content="{{SEO_URL}}" />
@@ -56,9 +66,9 @@
         <!-- Leaflet CSS & JS -->
         <link
             rel="stylesheet"
-            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            href="css/vendor/leaflet/leaflet.css"
         />
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script src="js/vendor/leaflet.js"></script>
 
         <!-- Google Fonts -->
         <link
@@ -67,16 +77,16 @@
         />
         
         <!-- Lucide Icons -->
-        <script src="https://unpkg.com/lucide@latest"></script>
+        <script src="js/vendor/lucide.js"></script>
 
         <!-- Flatpickr (Calendar) -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+        <link rel="stylesheet" href="css/vendor/flatpickr.css">
+        <script src="js/vendor/flatpickr.js"></script>
+        <script src="js/vendor/flatpickr-fr.js"></script>
 
         <!-- AOS (Animate On Scroll) -->
-        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        <link href="css/vendor/aos.css" rel="stylesheet">
+        <script src="js/vendor/aos.js"></script>
 
         <!-- Custom Styles -->
         <link rel="stylesheet" href="css/style.css" />

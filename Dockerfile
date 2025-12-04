@@ -19,6 +19,27 @@ COPY js ./js
 # Build CSS
 RUN npm run build:css
 
+# --- Organize Vendor Files (in Builder) ---
+RUN mkdir -p js/vendor css/vendor/leaflet
+
+# Leaflet
+RUN cp node_modules/leaflet/dist/leaflet.js js/vendor/leaflet.js \
+    && cp node_modules/leaflet/dist/leaflet.css css/vendor/leaflet/leaflet.css \
+    && cp -r node_modules/leaflet/dist/images css/vendor/leaflet/images
+
+# AOS
+RUN cp node_modules/aos/dist/aos.js js/vendor/aos.js \
+    && cp node_modules/aos/dist/aos.css css/vendor/aos.css
+
+# Flatpickr
+RUN cp node_modules/flatpickr/dist/flatpickr.min.js js/vendor/flatpickr.js \
+    && cp node_modules/flatpickr/dist/l10n/fr.js js/vendor/flatpickr-fr.js \
+    && cp node_modules/flatpickr/dist/flatpickr.min.css css/vendor/flatpickr.css
+
+# Lucide
+RUN cp node_modules/lucide/dist/umd/lucide.min.js js/vendor/lucide.js
+
+
 # --- Stage 2: Final Image ---
 FROM alpine:latest
 
@@ -68,9 +89,10 @@ RUN mkdir -p /pb_public
 
 # 4. Copy static site assets
 COPY index.html /pb_public/index.html
-COPY js /pb_public/js
-# COPY Generated CSS from builder stage
-COPY --from=builder /app/css/style.css /pb_public/css/style.css
+
+# Copy JS and CSS (including vendor files and built CSS from builder)
+COPY --from=builder /app/js /pb_public/js
+COPY --from=builder /app/css /pb_public/css
 
 # Copy config for SEO injection
 # Config is optional. If not present, SEO injection is skipped (handled in entrypoint.sh).

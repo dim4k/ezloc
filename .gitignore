@@ -16,3 +16,7 @@ node_modules/
 
 # Guides
 GUIDE_*
+
+# Vendor files (managed via Docker/npm)
+js/vendor/
+css/vendor/
