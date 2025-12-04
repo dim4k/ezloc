@@ -29,10 +29,11 @@ export class ContactSection extends BaseComponent {
             if (data.contents) {
                 this.bookedDates = parseICal(data.contents);
                 console.log(`📅 Calendar parsed: ${this.bookedDates.length} booked days found.`);
-                this.initCalendars();
+                this.updateCalendarDates();
             }
         } catch (error) {
             console.error("Error fetching Airbnb calendar:", error);
+            // Even on error, the calendar is already initialized, so the user can still use the form.
         }
     }
 
@@ -78,19 +79,11 @@ export class ContactSection extends BaseComponent {
         hiddenInput.className = "hidden"; // Ensure it stays hidden
         this.appendChild(hiddenInput);
 
-        // Convert dates to YYYY-MM-DD strings to avoid any timezone issues with Flatpickr
-        const disabledDates = this.bookedDates.map(d => {
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        });
-
         const commonConfig = {
             locale: "fr",
             dateFormat: "Y-m-d",
             minDate: "today",
-            disable: disabledDates,
+            disable: [], // Initially empty, updated later
             disableMobile: false, // Force custom UI on mobile
             mode: "range",
             showMonths: window.innerWidth > 768 ? 2 : 1,
@@ -115,11 +108,12 @@ export class ContactSection extends BaseComponent {
             },
         };
 
-        const fp = flatpickr(hiddenInput, commonConfig);
+        // Store instance to update it later
+        this.fp = flatpickr(hiddenInput, commonConfig);
 
         // Bind clicks on visible inputs to open the hidden calendar
         const openCalendar = () => {
-            fp.open();
+            this.fp.open();
         };
 
         arrivalInput.addEventListener("click", openCalendar);
@@ -129,6 +123,20 @@ export class ContactSection extends BaseComponent {
             departureInput.addEventListener("click", openCalendar);
             departureInput.setAttribute("readonly", true);
         }
+    }
+
+    updateCalendarDates() {
+        if (!this.fp) return;
+
+        // Convert dates to YYYY-MM-DD strings
+        const disabledDates = this.bookedDates.map(d => {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        });
+
+        this.fp.set('disable', disabledDates);
     }
 
     async handleSubmit(e) {
@@ -368,10 +376,8 @@ ${data.name}`;
             this.querySelector("#booking-form").classList.remove("hidden");
         });
 
-        // Initialize calendars immediately if no URL is set (so the inputs still work)
-        if (!this.config.general.airbnbCalendarUrl) {
-             setTimeout(() => this.initCalendars(), 0);
-        }
+        // Initialize calendars immediately
+        setTimeout(() => this.initCalendars(), 0);
 
         // Initialize Turnstile
         if (this.config.general.captchaSiteKey) {
