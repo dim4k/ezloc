@@ -67,8 +67,11 @@
         <link
             rel="stylesheet"
             href="css/vendor/leaflet/leaflet.css"
+            media="print"
+            onload="this.media='all'"
         />
-        <script src="js/vendor/leaflet.js"></script>
+        <noscript><link rel="stylesheet" href="css/vendor/leaflet/leaflet.css"></noscript>
+        <script src="js/vendor/leaflet.js" defer></script>
 
         <!-- Google Fonts -->
         <link
@@ -77,16 +80,18 @@
         />
         
         <!-- Lucide Icons -->
-        <script src="js/vendor/lucide.js"></script>
+        <script src="js/vendor/lucide.js" defer></script>
 
         <!-- Flatpickr (Calendar) -->
-        <link rel="stylesheet" href="css/vendor/flatpickr.css">
-        <script src="js/vendor/flatpickr.js"></script>
-        <script src="js/vendor/flatpickr-fr.js"></script>
+        <link rel="stylesheet" href="css/vendor/flatpickr.css" media="print" onload="this.media='all'">
+        <noscript><link rel="stylesheet" href="css/vendor/flatpickr.css"></noscript>
+        <script src="js/vendor/flatpickr.js" defer></script>
+        <script src="js/vendor/flatpickr-fr.js" defer></script>
 
         <!-- AOS (Animate On Scroll) -->
-        <link href="css/vendor/aos.css" rel="stylesheet">
-        <script src="js/vendor/aos.js"></script>
+        <link href="css/vendor/aos.css" rel="stylesheet" media="print" onload="this.media='all'">
+        <noscript><link rel="stylesheet" href="css/vendor/aos.css"></noscript>
+        <script src="js/vendor/aos.js" defer></script>
 
         <!-- Custom Styles -->
         <link rel="stylesheet" href="css/style.css" />

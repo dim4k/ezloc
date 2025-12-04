@@ -21,7 +21,7 @@ export class NavBar extends BaseComponent {
                         </div>
                         <!-- Mobile Menu Button -->
                         <div class="md:hidden">
-                            <button class="text-slate-600 p-2" onclick="document.querySelector('#mobile-menu').classList.toggle('hidden')">
+                            <button class="text-slate-600 p-2" onclick="document.querySelector('#mobile-menu').classList.toggle('hidden')" aria-label="Menu principal">
                                 <i data-lucide="menu"></i>
                             </button>
                         </div>
