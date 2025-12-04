@@ -18,16 +18,20 @@ export class ContactSection extends BaseComponent {
         if (!calendarUrl) return;
 
         try {
-            // Use allorigins.win as a CORS proxy
-            // Add timestamp to prevent caching
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(
+            // Use local PocketBase proxy to avoid CORS and external dependency issues
+            const proxyUrl = `${PB_URL}/api/ical-proxy?url=${encodeURIComponent(
                 calendarUrl
             )}&t=${Date.now()}`;
+            
             const response = await fetch(proxyUrl);
-            const data = await response.json();
+            
+            if (!response.ok) throw new Error(`Proxy error: ${response.status}`);
+            
+            // The proxy returns raw text (iCal format), not JSON with a 'contents' field like allorigins
+            const icalData = await response.text();
 
-            if (data.contents) {
-                this.bookedDates = parseICal(data.contents);
+            if (icalData && icalData.includes("BEGIN:VCALENDAR")) {
+                this.bookedDates = parseICal(icalData);
                 console.log(`📅 Calendar parsed: ${this.bookedDates.length} booked days found.`);
                 this.updateCalendarDates();
             }
