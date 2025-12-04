@@ -103,6 +103,20 @@ export async function initCMS() {
         if (siteInfoRecord.heroTitle) SITE_CONFIG.hero.title = siteInfoRecord.heroTitle;
         if (siteInfoRecord.heroSubtitle) SITE_CONFIG.hero.subtitle = siteInfoRecord.heroSubtitle;
         if (siteInfoRecord.heroImage) SITE_CONFIG.hero.image = getFileUrl(siteInfoRecord, siteInfoRecord.heroImage);
+        
+        // Favicon
+        if (siteInfoRecord.favicon) {
+            const faviconUrl = getFileUrl(siteInfoRecord, siteInfoRecord.favicon);
+            const link = document.querySelector("link[rel~='icon']");
+            if (link) {
+                link.href = faviconUrl;
+            } else {
+                const newLink = document.createElement("link");
+                newLink.rel = "icon";
+                newLink.href = faviconUrl;
+                document.head.appendChild(newLink);
+            }
+        }
 
         // Island
         if (siteInfoRecord.islandTitle) SITE_CONFIG.island.title = siteInfoRecord.islandTitle;
