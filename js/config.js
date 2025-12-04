@@ -24,9 +24,9 @@ export const SITE_CONFIG = {
             cleaningFee: 80,
             defaultPrice: 200,
             periods: [
-                { start: "07-01", end: "08-31", price: 300 },
-                { start: "12-20", end: "01-05", price: 250 },
-                { start: "05-01", end: "05-31", price: 180 }
+                { start: "01/07", end: "31/08", price: 300 },
+                { start: "20/12", end: "05/01", price: 250 },
+                { start: "01/05", end: "31/05", price: 180 }
             ]
         }
     },

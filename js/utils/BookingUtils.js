@@ -62,9 +62,9 @@ function isDateInPeriod(date, startStr, endStr) {
     const month = date.getMonth() + 1; // 1-12
     const day = date.getDate(); // 1-31
     
-    // Parse DD/MM
-    const [startDay, startMonth] = startStr.split("/").map(Number);
-    const [endDay, endMonth] = endStr.split("/").map(Number);
+    // Parse DD/MM or DD-MM
+    const [startDay, startMonth] = startStr.split(/[/-]/).map(Number);
+    const [endDay, endMonth] = endStr.split(/[/-]/).map(Number);
 
     // Convert to comparable numbers (MMDD) for easier comparison
     const current = month * 100 + day;
