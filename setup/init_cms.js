@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const PB_URL = process.env.PB_URL || 'http://192.168.1.62:8090';
+const PB_URL = process.env.PB_URL || 'http://localhost:8090';
 const ADMIN_EMAIL = process.argv[2];
 const ADMIN_PASS = process.argv[3];
 
@@ -24,27 +24,30 @@ function resolveImagePath(relativePath) {
 }
 
 async function main() {
+    async function safeFetch(url, options) {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Request to ${url} failed with status ${response.status}: ${errorText}`);
+        }
+        return response.json();
+    }
+
     try {
         console.log(`🚀 Starting CMS initialization on ${PB_URL}...`);
 
         // 1. Authenticate
         console.log("🔑 Authenticating...");
-        let token;
-        try {
-            const authData = await fetch(`${PB_URL}/api/admins/auth-with-password`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ identity: ADMIN_EMAIL, password: ADMIN_PASS })
-            }).then(r => r.json());
-            
-            if (!authData.token) throw new Error(JSON.stringify(authData));
-            token = authData.token;
-        } catch (e) {
-            throw new Error(`Authentication failed. Check your credentials and ensure PocketBase is running at ${PB_URL}. Details: ${e.message}`);
-        }
+        const authData = await safeFetch(`${PB_URL}/api/admins/auth-with-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ identity: ADMIN_EMAIL, password: ADMIN_PASS })
+        });
+        
+        const token = authData.token;
         console.log("✅ Authenticated.");
 
-        // 2. Schema Import -> Moved to pb_migrations/1733414400_init_collections.js
+        // 2. Schema Import handled by migrations
         console.log("📜 Schema checks handled by PocketBase migrations.");
 
         // 3. Read Config
@@ -53,59 +56,57 @@ async function main() {
         }
         const config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
 
-        // 4. Migrate Site Info
-        console.log("🏠 Migrating Site Info...");
-        const existingInfo = await fetch(`${PB_URL}/api/collections/site_info/records?perPage=1`, {
-            headers: { 'Authorization': token }
-        }).then(r => r.json());
+        // 4. Migrate Site Identity
+        console.log("🆔 Migrating Site Identity...");
+        const identityData = new FormData();
+        identityData.append('name', config.site_identity.name);
+        identityData.append('tagline', config.site_identity.tagline || "");
+        identityData.append('description', config.site_identity.description);
+        identityData.append('labels', JSON.stringify(config.site_identity.labels));
 
-        const siteInfoData = new FormData();
-        siteInfoData.append('name', config.site_info.name);
-        siteInfoData.append('tagline', config.site_info.tagline || "");
-        siteInfoData.append('description', config.site_info.description);
-        
-        if (config.site_info.hero) {
-            siteInfoData.append('heroTitle', config.site_info.hero.title);
-            siteInfoData.append('heroSubtitle', config.site_info.hero.subtitle);
-            if (config.site_info.hero.image) {
-                const imgPath = resolveImagePath(config.site_info.hero.image);
+        if (config.site_identity.favicon) {
+            const imgPath = resolveImagePath(config.site_identity.favicon);
+            if (imgPath && fs.existsSync(imgPath)) {
+                const file = new File([fs.readFileSync(imgPath)], path.basename(imgPath));
+                identityData.append('favicon', file);
+            }
+        }
+        await safeFetch(`${PB_URL}/api/collections/site_identity/records`, { method: 'POST', headers: { 'Authorization': token }, body: identityData });
+
+        // 4b. Migrate Welcome Section
+        console.log("👋 Migrating Welcome Section...");
+        const welcomeData = new FormData();
+        if (config.welcome) {
+            welcomeData.append('title', config.welcome.title);
+            welcomeData.append('subtitle', config.welcome.subtitle);
+            if (config.welcome.image) {
+                const imgPath = resolveImagePath(config.welcome.image);
                 if (imgPath && fs.existsSync(imgPath)) {
                     const file = new File([fs.readFileSync(imgPath)], path.basename(imgPath));
-                    siteInfoData.append('heroImage', file);
+                    welcomeData.append('image', file);
                 }
             }
         }
+        await safeFetch(`${PB_URL}/api/collections/welcome/records`, { method: 'POST', headers: { 'Authorization': token }, body: welcomeData });
 
-        if (config.site_info.favicon) {
-            const imgPath = resolveImagePath(config.site_info.favicon);
-            if (imgPath && fs.existsSync(imgPath)) {
-                const file = new File([fs.readFileSync(imgPath)], path.basename(imgPath));
-                siteInfoData.append('favicon', file);
-            }
+        // 4c. Migrate House Config
+        console.log("🏠 Migrating House Config...");
+        const houseConfigData = new FormData();
+        if (config.house_config) {
+             houseConfigData.append('title', config.house_config.title);
+             houseConfigData.append('subtitle', config.house_config.subtitle);
+             houseConfigData.append('amenities', JSON.stringify(config.house_config.amenities));
         }
+        await safeFetch(`${PB_URL}/api/collections/house_config/records`, { method: 'POST', headers: { 'Authorization': token }, body: houseConfigData });
 
-        if (config.site_info.island) {
-            siteInfoData.append('islandTitle', config.site_info.island.title);
-            siteInfoData.append('islandSubtitle', config.site_info.island.subtitle);
+        // 4d. Migrate Activities Config
+        console.log("b Migrating Activities Config...");
+        const activitiesConfigData = new FormData();
+        if (config.activities_config) {
+            activitiesConfigData.append('title', config.activities_config.title);
+            activitiesConfigData.append('subtitle', config.activities_config.subtitle);
         }
-
-        siteInfoData.append('labels', JSON.stringify(config.site_info.labels));
-        siteInfoData.append('amenities', JSON.stringify(config.site_info.amenities));
-
-        if (existingInfo.items && existingInfo.items.length > 0) {
-            await fetch(`${PB_URL}/api/collections/site_info/records/${existingInfo.items[0].id}`, {
-                method: 'PATCH',
-                headers: { 'Authorization': token },
-                body: siteInfoData
-            });
-        } else {
-            await fetch(`${PB_URL}/api/collections/site_info/records`, {
-                method: 'POST',
-                headers: { 'Authorization': token },
-                body: siteInfoData
-            });
-        }
-        console.log("✅ Site Info migrated.");
+        await safeFetch(`${PB_URL}/api/collections/activities_config/records`, { method: 'POST', headers: { 'Authorization': token }, body: activitiesConfigData });
 
         // 4b. Migrate Contact
         console.log("📞 Migrating Contact...");
@@ -115,7 +116,7 @@ async function main() {
             name: config.contact.name,
             airbnbUrl: config.contact.airbnbUrl
         };
-        await fetch(`${PB_URL}/api/collections/contact/records`, {
+        await safeFetch(`${PB_URL}/api/collections/contact/records`, {
             method: 'POST',
             headers: { 'Authorization': token, 'Content-Type': 'application/json' },
             body: JSON.stringify(contactData)
@@ -130,7 +131,7 @@ async function main() {
                 address: config.location.address,
                 zoom: config.location.mapZoom
             };
-            await fetch(`${PB_URL}/api/collections/location/records`, {
+            await safeFetch(`${PB_URL}/api/collections/location/records`, {
                 method: 'POST',
                 headers: { 'Authorization': token, 'Content-Type': 'application/json' },
                 body: JSON.stringify(locData)
@@ -145,7 +146,7 @@ async function main() {
                 defaultPrice: config.pricing.defaultPrice,
                 details: JSON.stringify(config.pricing.details || [])
             };
-            await fetch(`${PB_URL}/api/collections/pricing_config/records`, {
+            await safeFetch(`${PB_URL}/api/collections/pricing_config/records`, {
                 method: 'POST',
                 headers: { 'Authorization': token, 'Content-Type': 'application/json' },
                 body: JSON.stringify(pricingConfig)
@@ -153,7 +154,7 @@ async function main() {
 
             if (config.pricing.periods) {
                 for (const period of config.pricing.periods) {
-                    await fetch(`${PB_URL}/api/collections/pricing_periods/records`, {
+                    await safeFetch(`${PB_URL}/api/collections/pricing_periods/records`, {
                         method: 'POST',
                         headers: { 'Authorization': token, 'Content-Type': 'application/json' },
                         body: JSON.stringify(period)
@@ -162,14 +163,11 @@ async function main() {
             }
         }
 
-        // 5. Migrate Features
-        console.log("🛏️ Migrating Features...");
-        // Delete existing to avoid duplicates? For safety, let's just add.
-        // Ideally we should check unique IDs but we are simplifying.
-        
-        if (config.features) {
-            for (let i = 0; i < config.features.length; i++) {
-                const feat = config.features[i];
+        // 5. Migrate House Features
+        console.log("🛏️ Migrating House Features...");
+        if (config.house_features) {
+            for (let i = 0; i < config.house_features.length; i++) {
+                const feat = config.house_features[i];
                 const formData = new FormData();
                 formData.append('title', feat.title);
                 formData.append('shortDesc', feat.shortDesc);
@@ -195,14 +193,14 @@ async function main() {
                     }
                 }
 
-                await fetch(`${PB_URL}/api/collections/features/records`, {
+                await safeFetch(`${PB_URL}/api/collections/house_features/records`, {
                     method: 'POST',
                     headers: { 'Authorization': token },
                     body: formData
                 });
             }
         }
-        console.log("✅ Features migrated.");
+        console.log("✅ House Features migrated.");
 
         // 6. Migrate Activities
         console.log("boats Migrating Activities...");
@@ -225,7 +223,7 @@ async function main() {
                     }
                 }
 
-                await fetch(`${PB_URL}/api/collections/activities/records`, {
+                await safeFetch(`${PB_URL}/api/collections/activities/records`, {
                     method: 'POST',
                     headers: { 'Authorization': token },
                     body: formData
@@ -245,7 +243,7 @@ async function main() {
                 formData.append('answer', item.answer);
                 formData.append('order', i);
 
-                await fetch(`${PB_URL}/api/collections/faq/records`, {
+                await safeFetch(`${PB_URL}/api/collections/faq/records`, {
                     method: 'POST',
                     headers: { 'Authorization': token },
                     body: formData

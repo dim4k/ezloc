@@ -2,6 +2,11 @@ import { BaseComponent } from "./BaseComponent.js";
 
 export class NavBar extends BaseComponent {
     render() {
+        if (!this.config.identity || !this.config.labels) {
+            this.style.display = 'none';
+            return;
+        }
+
         const { nav } = this.config.labels;
         this.innerHTML = `
             <nav class="fixed w-full z-50 transition-all duration-300 bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-100">
@@ -9,8 +14,8 @@ export class NavBar extends BaseComponent {
                     <div class="flex justify-between items-center h-20">
                         <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
                             <i data-lucide="sailboat" class="h-8 w-8 text-breizh-blue"></i>
-                            <span class="font-serif text-xl font-bold text-breizh-navy tracking-wide hidden sm:block">${this.config.general.name}</span>
-                            <span class="font-serif text-xl font-bold text-breizh-navy tracking-wide sm:hidden">${this.config.general.name}</span>
+                            <span class="font-serif text-xl font-bold text-breizh-navy tracking-wide hidden sm:block">${this.config.identity.name}</span>
+                            <span class="font-serif text-xl font-bold text-breizh-navy tracking-wide sm:hidden">${this.config.identity.name}</span>
                         </div>
                         <div class="hidden md:flex space-x-8 items-center">
                             <a href="#maison" class="text-slate-600 hover:text-breizh-blue transition-colors uppercase text-xs tracking-widest font-semibold">${nav.home}</a>

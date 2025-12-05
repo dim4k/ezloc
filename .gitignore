@@ -9,6 +9,7 @@ setup/config.json
 .DS_Store
 Thumbs.db
 *.log
+.vscode/
 
 # Node
 node_modules/

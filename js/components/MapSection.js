@@ -56,6 +56,11 @@ export class MapSection extends BaseComponent {
     }
 
     render() {
+        if (!this.config.location || !this.config.labels) {
+            this.style.display = 'none';
+            return;
+        }
+
         const { map } = this.config.labels;
         this.innerHTML = `
             <section id="carte" class="py-0 flex flex-col md:flex-row h-auto md:h-[600px]">
