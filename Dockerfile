@@ -104,6 +104,7 @@ RUN mkdir -p /pb_public/img
 
 # Copy PocketBase Hooks
 COPY pb_hooks /pb_hooks
+COPY pb_migrations /pb_migrations
 
 # 5. Copy and setup Entrypoint Script
 COPY entrypoint.sh /entrypoint.sh
