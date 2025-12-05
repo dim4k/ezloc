@@ -52,6 +52,11 @@ export async function initCMS() {
             .then(r => r.json())
             .then(data => data.items || []);
 
+        // 4. Fetch FAQs (List)
+        const faqRecords = await fetch(`${PB_URL}/api/collections/faq/records?sort=order`)
+            .then(r => r.json())
+            .then(data => data.items || []);
+
         // --- Helper to get file URL ---
         const getFileUrl = (record, filename) => {
             if (!filename) return "";
@@ -141,6 +146,14 @@ export async function initCMS() {
                 title: a.title,
                 description: a.description,
                 images: a.images ? a.images.map(img => getFileUrl(a, img)) : []
+            }));
+        }
+
+        // FAQs
+        if (faqRecords.length > 0) {
+            SITE_CONFIG.faq = faqRecords.map(f => ({
+                question: f.question,
+                answer: f.answer
             }));
         }
 

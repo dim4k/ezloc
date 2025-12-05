@@ -273,6 +273,26 @@ async function main() {
             }
         }
         console.log("✅ Activities migrated.");
+
+        // 7. Migrate FAQ
+        console.log("❓ Migrating FAQ...");
+        if (config.faq) {
+            const faqs = config.faq;
+            for (let i = 0; i < faqs.length; i++) {
+                const item = faqs[i];
+                const formData = new FormData();
+                formData.append('question', item.question);
+                formData.append('answer', item.answer);
+                formData.append('order', i);
+
+                await fetch(`${PB_URL}/api/collections/faq/records`, {
+                    method: 'POST',
+                    headers: { 'Authorization': token },
+                    body: formData
+                });
+            }
+        }
+        console.log("✅ FAQ migrated.");
         console.log("🎉 INITIALIZATION COMPLETE!");
 
     } catch (error) {

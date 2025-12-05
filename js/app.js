@@ -3,6 +3,7 @@ import { HeroSection } from "./components/HeroSection.js";
 import { HouseFeatures } from "./components/HouseFeatures.js";
 import { IslandSection } from "./components/IslandSection.js";
 import { MapSection } from "./components/MapSection.js";
+import { FaqSection } from "./components/FaqSection.js";
 import { ContactSection } from "./components/ContactSection.js";
 import { SiteFooter } from "./components/SiteFooter.js";
 import { DetailModal } from "./components/DetailModal.js";
@@ -21,6 +22,7 @@ class AppRoot extends HTMLElement {
                 <house-features></house-features>
                 <island-section></island-section>
                 <map-section></map-section>
+                <faq-section></faq-section>
                 <contact-section></contact-section>
             </main>
             <site-footer></site-footer>
@@ -40,6 +42,7 @@ class AppRoot extends HTMLElement {
     customElements.define("house-features", HouseFeatures);
     customElements.define("island-section", IslandSection);
     customElements.define("map-section", MapSection);
+    customElements.define("faq-section", FaqSection);
     customElements.define("contact-section", ContactSection);
     customElements.define("site-footer", SiteFooter);
     customElements.define("detail-modal", DetailModal);

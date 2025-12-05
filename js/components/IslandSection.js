@@ -51,17 +51,18 @@ export class IslandSection extends BaseComponent {
         const { island } = this.config;
 
         const activitiesHtml = island.activities
-            .map((activity) => {
+            .map((activity, index) => {
                 const imageCount = activity.images?.length || 0;
                 const firstImage = activity.images?.[0] || "./img/facade.jpg";
 
                 return `
-            <div class="flex flex-col h-full">
-                <!-- Content -->
-                <div class="flex flex-col items-center text-center flex-1">
-                    <div class="w-40 h-40 rounded-full overflow-hidden flex items-center justify-center mb-4 shadow-lg border-4 border-slate-200" style="background-image: url('${firstImage}'); background-size: cover; background-position: center;"></div>
-                    <h3 class="font-bold text-breizh-navy mb-2">${activity.title}</h3>
-                    <p class="text-slate-600 text-sm">${activity.description}</p>
+            <div class="h-full" data-aos="fade-up" data-aos-delay="${index * 100}">
+                <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-6 h-full flex flex-col items-center text-center border border-slate-100 group hover:-translate-y-1">
+                    <div class="rounded-full overflow-hidden flex-shrink-0 mb-6 shadow-md border-4 border-slate-50 bg-slate-100 group-hover:border-breizh-blue/20 transition-colors duration-300" style="width: 120px; height: 120px;">
+                        <img src="${firstImage}" alt="${activity.title}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" loading="lazy">
+                    </div>
+                    <h3 class="font-bold text-xl text-breizh-navy mb-3 font-serif group-hover:text-breizh-blue transition-colors">${activity.title}</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">${activity.description}</p>
                 </div>
             </div>
         `;

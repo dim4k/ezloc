@@ -35,6 +35,7 @@ export const SITE_CONFIG = {
             home: "Accueil",
             pricing: "Tarifs",
             location: "Accès",
+            faq: "Questions",
             book: "Contact"
         },
         hero: {
@@ -199,5 +200,23 @@ export const SITE_CONFIG = {
             "Linge de maison inclus",
             "Ménage de fin de séjour inclus"
         ]
-    }
+    },
+    faq: [
+        {
+            question: "Quelles sont les heures d'arrivée et de départ ?",
+            answer: "L'arrivée se fait à partir de 16h et le départ avant 10h. En cas de besoin spécifique, merci de nous contacter à l'avance."
+        },
+        {
+            question: "Les draps et serviettes sont-ils fournis ?",
+            answer: "Oui, tout le linge de maison est fourni (draps, serviettes de toilette, serviettes de piscine) et les lits sont faits à votre arrivée."
+        },
+        {
+            question: "La piscine est-elle sécurisée ?",
+            answer: "Oui, la piscine dispose d'une alarme immergée conforme aux normes de sécurité en vigueur. Cependant, la vigilance des adultes reste indispensable."
+        },
+        {
+            question: "Acceptez-vous les animaux ?",
+            answer: "Nous aimons beaucoup les animaux, mais pour des raisons d'hygiène et d'allergies, ils ne sont pas admis dans la villa."
+        }
+    ]
 };

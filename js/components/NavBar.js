@@ -15,6 +15,7 @@ export class NavBar extends BaseComponent {
                         <div class="hidden md:flex space-x-8 items-center">
                             <a href="#maison" class="text-slate-600 hover:text-breizh-blue transition-colors uppercase text-xs tracking-widest font-semibold">${nav.home}</a>
                             <a href="#carte" class="text-slate-600 hover:text-breizh-blue transition-colors uppercase text-xs tracking-widest font-semibold">${nav.location}</a>
+                            <a href="#faq" class="text-slate-600 hover:text-breizh-blue transition-colors uppercase text-xs tracking-widest font-semibold">${nav.faq || 'FAQ'}</a>
                             <a href="#contact" class="px-6 py-2 btn-primary rounded-full text-sm font-semibold">
                                 ${nav.book}
                             </a>
@@ -31,6 +32,7 @@ export class NavBar extends BaseComponent {
                 <div id="mobile-menu" class="hidden md:hidden bg-white border-t p-4 space-y-4 shadow-lg absolute w-full">
                     <a href="#maison" class="block text-slate-700 py-2" onclick="this.closest('#mobile-menu').classList.add('hidden')">${nav.home}</a>
                     <a href="#carte" class="block text-slate-700 py-2" onclick="this.closest('#mobile-menu').classList.add('hidden')">${nav.location}</a>
+                    <a href="#faq" class="block text-slate-700 py-2" onclick="this.closest('#mobile-menu').classList.add('hidden')">${nav.faq || 'FAQ'}</a>
                     <a href="#contact" class="block text-breizh-blue font-bold py-2" onclick="this.closest('#mobile-menu').classList.add('hidden')">${nav.book}</a>
                 </div>
             </nav>

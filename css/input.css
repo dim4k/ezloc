@@ -197,6 +197,11 @@ html {
     scroll-behavior: smooth;
 }
 
+/* Global Scroll Offset for Fixed Header */
+section[id] {
+    scroll-margin-top: 80px;
+}
+
 /* Polished Button Style */
 .btn-primary {
     background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
