@@ -2,6 +2,11 @@ import { BaseComponent } from "./BaseComponent.js";
 
 export class SiteFooter extends BaseComponent {
     render() {
+        if (!this.config.identity || !this.config.labels) {
+            this.style.display = 'none';
+            return;
+        }
+
         const year = new Date().getFullYear();
         const { footer } = this.config.labels;
         this.innerHTML = `
@@ -9,7 +14,7 @@ export class SiteFooter extends BaseComponent {
                 <div class="max-w-7xl mx-auto px-4">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                         <div>
-                            <h3 class="font-serif text-2xl font-bold mb-2">${this.config.general.name}</h3>
+                            <h3 class="font-serif text-2xl font-bold mb-2">${this.config.identity.name}</h3>
                             <p class="text-slate-400 text-sm">${footer.location}</p>
                         </div>
                         

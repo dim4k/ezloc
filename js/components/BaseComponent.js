@@ -1,4 +1,4 @@
-import { SITE_CONFIG } from "../config.js";
+import { SITE_CONFIG } from "../cms.js";
 
 /**
  * BASE COMPONENT CLASS
@@ -14,6 +14,10 @@ export class BaseComponent extends HTMLElement {
         this.render();
         // Re-initialize Lucide icons after rendering
         if (window.lucide) lucide.createIcons();
+    }
+
+    disconnectedCallback() {
+        // To be implemented by child or used for cleanup
     }
 
     render() {

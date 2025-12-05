@@ -1,6 +1,6 @@
 import { BaseComponent } from "./BaseComponent.js";
 
-export class HeroSection extends BaseComponent {
+export class WelcomeSection extends BaseComponent {
     connectedCallback() {
         super.connectedCallback();
         window.addEventListener('scroll', this.handleScroll.bind(this));
@@ -19,23 +19,28 @@ export class HeroSection extends BaseComponent {
     }
 
     render() {
-        const { hero } = this.config.labels;
+        if (!this.config.welcome || !this.config.identity) {
+            this.style.display = 'none';
+            return;
+        }
+        
+        const { hero } = this.config.labels || { hero: {} }; // Fallback for labels if partial
         this.innerHTML = `
             <div class="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
                 <!-- Background Image with Overlay -->
                 <div class="absolute inset-0 z-0">
-                    <img src="${this.config.hero.image}" class="hero-image w-full h-full object-cover object-center scale-105 blur-sm transition-transform duration-75 ease-out" alt="${this.config.hero.title}">
+                    <img src="${this.config.welcome.image}" class="hero-image w-full h-full object-cover object-center scale-105 blur-sm transition-transform duration-75 ease-out" alt="${this.config.welcome.title}">
                     <div class="absolute inset-0 bg-gradient-to-b from-breizh-navy/40 to-breizh-navy/70"></div>
                 </div>
                 
                 <!-- Content -->
                 <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
-                    <h2 class="text-white/90 text-sm md:text-base uppercase tracking-[0.3em] mb-4" data-aos="fade-down" data-aos-delay="100">${this.config.hero.subtitle}</h2>
+                    <h2 class="text-white/90 text-sm md:text-base uppercase tracking-[0.3em] mb-4" data-aos="fade-down" data-aos-delay="100">${this.config.welcome.subtitle}</h2>
                     <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-bold mb-8 leading-tight" data-aos="fade-up" data-aos-delay="200">
-                        ${this.config.hero.title}
+                        ${this.config.welcome.title}
                     </h1>
                     <p class="text-slate-200 text-lg md:text-xl max-w-2xl mx-auto mb-10 font-light leading-relaxed" data-aos="fade-up" data-aos-delay="300">
-                        ${this.config.general.description}
+                        ${this.config.identity.description}
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center" data-aos="fade-up" data-aos-delay="400">
                         <a href="#maison" class="px-8 py-3 bg-white text-breizh-navy rounded-full hover:bg-sand transition-all font-semibold shadow-xl hover:-translate-y-1">

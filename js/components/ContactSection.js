@@ -14,7 +14,7 @@ export class ContactSection extends BaseComponent {
     }
 
     async fetchAvailability() {
-        const calendarUrl = this.config.general.airbnbCalendarUrl;
+        const calendarUrl = this.config.contact.airbnbUrl;
         if (!calendarUrl) return;
 
         try {
@@ -103,7 +103,7 @@ export class ContactSection extends BaseComponent {
                     departureInput.value = instance.formatDate(selectedDates[1], "j F Y");
                     
                     // Calculate and display price
-                    const priceDetails = calculatePrice(selectedDates[0], selectedDates[1], this.config.general.pricing);
+                    const priceDetails = calculatePrice(selectedDates[0], selectedDates[1], this.config.pricing);
                     this.updatePriceDisplay(priceDetails);
                 } else {
                     departureInput.value = "";
@@ -158,7 +158,7 @@ export class ContactSection extends BaseComponent {
         const data = Object.fromEntries(formData.entries());
 
         // Check Captcha
-        if (this.config.general.captchaSiteKey) {
+        if (window.TURNSTILE_SITE_KEY) {
             const token = formData.get('cf-turnstile-response');
             if (!token) {
                 alert("Veuillez valider le captcha.");
@@ -177,9 +177,6 @@ export class ContactSection extends BaseComponent {
             const totalEl = priceContainer.querySelector(".border-t span:last-child");
             if (totalEl) priceText = totalEl.textContent;
         }
-
-        // Add price to data
-        data.price_estimation = priceText;
 
         // Add price to data
         data.price_estimation = priceText;
@@ -241,11 +238,16 @@ ${data.message}
 Cordialement,
 ${data.name}`;
 
-        const mailtoLink = `mailto:${this.config.general.bookingEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        const mailtoLink = `mailto:${this.config.contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.location.href = mailtoLink;
     }
 
     render() {
+        if (!this.config.contact || !this.config.labels) {
+            this.style.display = 'none';
+            return;
+        }
+
         const { contact } = this.config.labels;
         this.innerHTML = `
             <section id="contact" class="py-24 bg-sand/30" data-aos="fade-up">
@@ -256,7 +258,7 @@ ${data.name}`;
                         }</h2>
                         <p class="mt-4 text-slate-600">${contact.subtitle.replace(
                             "{name}",
-                            this.config.general.contactName
+                            this.config.contact.name
                         )}</p>
                     </div>
 
@@ -349,20 +351,20 @@ ${data.name}`;
                     <div class="mt-8 pt-8 border-t-2 border-slate-100">
                         <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
                             <!-- Phone -->
-                            <a href="tel:${this.config.general.bookingPhone.replace(/\s/g, "")}" class="inline-flex items-center gap-3 px-8 py-4 bg-white border-2 border-breizh-blue text-breizh-blue rounded-full hover:bg-breizh-blue hover:text-white transition-all group shadow-sm hover:shadow-md">
+                            <a href="tel:${this.config.contact.phone.replace(/\s/g, "")}" class="inline-flex items-center gap-3 px-8 py-4 bg-white border-2 border-breizh-blue text-breizh-blue rounded-full hover:bg-breizh-blue hover:text-white transition-all group shadow-sm hover:shadow-md">
                                 <i data-lucide="phone" class="w-6 h-6 group-hover:scale-110 transition-transform"></i>
                                 <div class="text-left">
                                     <p class="text-xs uppercase tracking-wider opacity-80 font-bold">${contact.phone.title}</p>
-                                    <p class="font-bold text-lg">${this.config.general.bookingPhone}</p>
+                                    <p class="font-bold text-lg">${this.config.contact.phone}</p>
                                 </div>
                             </a>
                             
                             <!-- Email -->
-                            <a href="mailto:${this.config.general.bookingEmail}" class="inline-flex items-center gap-3 px-8 py-4 bg-breizh-blue/10 text-breizh-navy font-bold rounded-full hover:bg-breizh-blue/20 transition-all border-2 border-breizh-blue hover:-translate-y-1 transform">
+                            <a href="mailto:${this.config.contact.email}" class="inline-flex items-center gap-3 px-8 py-4 bg-breizh-blue/10 text-breizh-navy font-bold rounded-full hover:bg-breizh-blue/20 transition-all border-2 border-breizh-blue hover:-translate-y-1 transform">
                                 <i data-lucide="mail" class="w-6 h-6"></i>
                                 <div class="text-left">
                                     <p class="text-xs uppercase tracking-wider opacity-80">${contact.email.title}</p>
-                                    <p>${this.config.general.bookingEmail}</p>
+                                    <p>${this.config.contact.email}</p>
                                 </div>
                             </a>
                         </div>
@@ -384,7 +386,7 @@ ${data.name}`;
         setTimeout(() => this.initCalendars(), 0);
 
         // Initialize Turnstile
-        if (this.config.general.captchaSiteKey) {
+        if (window.TURNSTILE_SITE_KEY) {
             this.initTurnstile();
         }
     }
@@ -409,7 +411,7 @@ ${data.name}`;
     renderTurnstile() {
         if (window.turnstile) {
             window.turnstile.render('#captcha-container', {
-                sitekey: this.config.general.captchaSiteKey,
+                sitekey: window.TURNSTILE_SITE_KEY,
                 theme: 'light',
             });
         } else {

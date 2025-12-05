@@ -1,13 +1,13 @@
 import { BaseComponent } from "./BaseComponent.js";
 
-export class IslandSection extends BaseComponent {
+export class ActivitiesSection extends BaseComponent {
     constructor() {
         super();
         this.currentImageIndex = {};
     }
 
     changeImage(activity, direction) {
-        const activity_obj = this.config.island.activities.find(
+        const activity_obj = this.config.activities.find(
             (a) => a.title === activity
         );
         if (!activity_obj) return;
@@ -27,7 +27,7 @@ export class IslandSection extends BaseComponent {
     }
 
     updateActivityGallery(activity) {
-        const activity_obj = this.config.island.activities.find(
+        const activity_obj = this.config.activities.find(
             (a) => a.title === activity
         );
         const key = `activity-${activity}`;
@@ -48,9 +48,14 @@ export class IslandSection extends BaseComponent {
     }
 
     render() {
-        const { island } = this.config;
+        if (!this.config.activities_config || !this.config.activities || this.config.activities.length === 0) {
+            this.style.display = 'none';
+            return;
+        }
 
-        const activitiesHtml = island.activities
+        const { activities_config } = this.config;
+
+        const activitiesHtml = this.config.activities
             .map((activity, index) => {
                 const imageCount = activity.images?.length || 0;
                 const firstImage = activity.images?.[0] || "./img/facade.jpg";
@@ -74,8 +79,8 @@ export class IslandSection extends BaseComponent {
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16">
                         <i data-lucide="compass" class="w-10 h-10 text-breizh-blue mx-auto mb-4"></i>
-                        <h2 class="text-4xl font-serif text-breizh-navy font-bold">${island.title}</h2>
-                        <p class="mt-4 text-slate-600 text-lg">${island.subtitle}</p>
+                        <h2 class="text-4xl font-serif text-breizh-navy font-bold">${activities_config.title}</h2>
+                        <p class="mt-4 text-slate-600 text-lg">${activities_config.subtitle}</p>
                         <div class="w-20 h-1 bg-accent mx-auto mt-6 rounded-full"></div>
                     </div>
                     

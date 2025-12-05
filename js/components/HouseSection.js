@@ -1,9 +1,14 @@
 import { BaseComponent } from "./BaseComponent.js";
 
-export class HouseFeatures extends BaseComponent {
+export class HouseSection extends BaseComponent {
     render() {
-        const { features } = this.config.labels;
-        const featuresHtml = this.config.features
+        if (!this.config.house_config || !this.config.house_features || this.config.house_features.length === 0) {
+            this.style.display = 'none';
+            return;
+        }
+
+        const { features } = this.config.labels || { features: {} };
+        const featuresHtml = this.config.house_features
             .map(
                 (feature, index) => `
             <div class="group relative bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden border border-slate-100"
@@ -41,10 +46,10 @@ export class HouseFeatures extends BaseComponent {
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16">
                         <span class="text-blue-700 text-sm font-bold uppercase tracking-widest">${
-                            features.sectionTitle
+                            this.config.house_config.title
                         }</span>
                         <h2 class="mt-3 text-4xl font-serif text-breizh-navy font-bold">${
-                            features.sectionSubtitle
+                            this.config.house_config.subtitle
                         }</h2>
                         <div class="w-20 h-1 bg-accent mx-auto mt-6 rounded-full"></div>
                     </div>
@@ -55,7 +60,7 @@ export class HouseFeatures extends BaseComponent {
 
                     <!-- Amenities Bar -->
                     <div class="mt-20 bg-white rounded-xl p-8 shadow-lg border border-slate-100 flex flex-wrap justify-center gap-6 md:gap-12 items-center">
-                        ${this.config.amenities
+                        ${this.config.house_config.amenities
                             .map(
                                 (item) => `
                             <div class="flex items-center gap-2 text-slate-600 font-medium">

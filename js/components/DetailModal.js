@@ -9,7 +9,7 @@ export class DetailModal extends BaseComponent {
     }
 
     open(featureId) {
-        const feature = this.config.features.find((f) => f.id === featureId);
+        const feature = this.config.house_features.find((f) => f.id === featureId);
         if (!feature) return;
 
         this.currentFeature = feature;

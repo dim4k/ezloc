@@ -36,9 +36,13 @@ export class FaqSection extends BaseComponent {
 
     render() {
         const faqs = this.config.faq || [];
-        const { faq: faqLabel } = this.config.labels.nav;
+        
+        if (faqs.length === 0 || !this.config.labels) {
+            this.style.display = 'none';
+            return;
+        }
 
-        if (faqs.length === 0) return;
+        const { faq: faqLabel } = this.config.labels.nav;
 
         this.innerHTML = `
             <section id="faq" class="py-24 bg-slate-50 border-t border-slate-200">

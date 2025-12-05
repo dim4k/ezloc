@@ -1,26 +1,9 @@
 {
-    "site_info": {
+    "site_identity": {
         "name": "Villa Paradiso",
         "tagline": "Votre évasion de rêve en bord de mer",
         "description": "Bienvenue à la Villa Paradiso. Une demeure d'exception pour 8 personnes, offrant une vue imprenable sur l'océan et tout le confort moderne pour des vacances inoubliables.",
         "favicon": "./img/favicon.png",
-        "seo": {
-            "url": "https://example.com/",
-            "title": "Villa Paradiso - Location de vacances",
-            "description": "Bienvenue à la Villa Paradiso. Une demeure d'exception pour 8 personnes.",
-            "keywords": "location, vacances, villa, mer, piscine",
-            "image": "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=2070&auto=format&fit=crop",
-            "priceRange": "1000€ - 3000€"
-        },
-        "hero": {
-            "title": "Villa Paradiso",
-            "subtitle": "Luxe, Calme et Volupté",
-            "image": "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=2070&auto=format&fit=crop"
-        },
-        "island": {
-            "title": "La Région",
-            "subtitle": "Entre mer et montagne"
-        },
         "labels": {
             "nav": {
                 "home": "Accueil",
@@ -34,8 +17,6 @@
                 "availability": "Voir les disponibilités"
             },
             "features": {
-                "sectionTitle": "Le Logement",
-                "sectionSubtitle": "Prestations haut de gamme",
                 "viewPhotos": "Voir la galerie",
                 "learnMore": "Détails"
             },
@@ -82,6 +63,23 @@
                 "close": "Fermer"
             }
         },
+        "seo": {
+            "url": "https://example.com/",
+            "title": "Villa Paradiso - Location de vacances",
+            "description": "Bienvenue à la Villa Paradiso. Une demeure d'exception pour 8 personnes.",
+            "keywords": "location, vacances, villa, mer, piscine",
+            "image": "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=2070&auto=format&fit=crop",
+            "priceRange": "1000€ - 3000€"
+        }
+    },
+    "welcome": {
+        "title": "Villa Paradiso",
+        "subtitle": "Luxe, Calme et Volupté",
+        "image": "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=2070&auto=format&fit=crop"
+    },
+    "house_config": {
+        "title": "Le Logement",
+        "subtitle": "Prestations haut de gamme",
         "amenities": [
             "8 Personnes",
             "4 Chambres",
@@ -91,6 +89,10 @@
             "Climatisation",
             "Parking Privé"
         ]
+    },
+    "activities_config": {
+        "title": "La Région",
+        "subtitle": "Entre mer et montagne"
     },
     "contact": {
         "email": "contact@example.com",
@@ -118,7 +120,7 @@
             "Ménage de fin de séjour inclus"
         ]
     },
-    "features": [
+    "house_features": [
         {
             "id": "house",
             "title": "La Villa",
