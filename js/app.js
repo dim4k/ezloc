@@ -61,7 +61,7 @@ class AppRoot extends HTMLElement {
                         <i data-lucide="alert-circle" class="w-16 h-16 text-red-500 mx-auto mb-6"></i>
                         <h1 class="text-3xl font-bold mb-4 font-serif">Configuration manquante</h1>
                         <p class="text-lg text-slate-600 mb-8">Impossible de charger le contenu du site. Veuillez vérifier que votre instance PocketBase est bien configurée et contient les collections requises.</p>
-                        <a href="/admin/" class="inline-block px-6 py-3 bg-breizh-navy text-white rounded-full hover:bg-breizh-blue transition-colors font-medium">Accéder à l'administration</a>
+                        <a href="/_/" class="inline-block px-6 py-3 bg-breizh-navy text-white rounded-full hover:bg-breizh-blue transition-colors font-medium">Accéder à l'administration</a>
                     </div>
                 </div>
             `;
