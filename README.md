@@ -34,7 +34,8 @@ cp setup/config.json.dist setup/config.json
 Then modify `setup/config.json` with your house information.
 
 **2. Run Initialization**
-Once the container is running and the config is ready, open a new terminal and run:
+Once the container is running and the config is ready, run the initialization script.
+**Note:** If you are re-installing, it is recommended to stop Docker and delete the `pb_data` directory to ensure a clean schema application.
 
 ```bash
 # Replace with your desired admin email and password
@@ -42,10 +43,11 @@ node setup/init_cms.js admin@example.com 1234567890
 ```
 
 This script will:
-1.  Create the PocketBase admin account.
-2.  Create the necessary collections (tables).
-3.  Import data from `setup/config.json`.
-4.  Upload images from `setup/img/`.
+1.  Authenticate with PocketBase.
+2.  Populate the database with data from `config.json`.
+3.  Upload images from `setup/img/`.
+
+*(The database schema is automatically applied via migrations in `pb_migrations/` at startup.)*
 
 ---
 
@@ -73,19 +75,27 @@ Pour savoir comment modifier le contenu du site (textes, images, prix) via Pocke
 
 Here are the different sections you can modify via the administration interface:
 
-### 1. `site_info` (General Information)
+### 1. `site_identity` (Global Info)
 *Unique (1 single record)*
 *   **name**: House name (e.g., "Villa Paradiso").
 *   **tagline**: Slogan.
 *   **description**: Short description for SEO.
-*   **heroTitle / heroSubtitle**: Homepage banner texts.
-*   **heroImage**: Banner background image.
 *   **favicon**: Site icon.
-*   **labels** (JSON): Texts for buttons and menus.
-*   **amenities** (JSON): List of amenities.
-*   **seo** (JSON): Advanced SEO configuration (Title, Description, Share Image).
+*   **labels**: Interface texts (buttons, menus) in JSON format.
 
-### 2. `features` (Highlights)
+### 2. `welcome` (Hero Section)
+*Unique*
+*   **title**: Main title on the homepage banner.
+*   **subtitle**: Subtitle/Welcome message.
+*   **image**: Banner background image.
+*   **display_options**: Visual settings (JSON).
+
+### 3. `house_config` (House Settings)
+*Unique*
+*   **title / subtitle**: Titles for the "The House" section.
+*   **amenities**: List of amenities (JSON).
+
+### 4. `house_features` (Highlights)
 *List of house highlights*
 *   **title**: Title (e.g., "The Pool").
 *   **shortDesc**: Short description.
@@ -95,39 +105,47 @@ Here are the different sections you can modify via the administration interface:
 *   **gallery**: Gallery of associated images.
 *   **order**: Display order.
 
-### 3. `activities` (Activities & Region)
+### 5. `activities` (Activities & Region)
 *List of nearby activities*
 *   **title**: Activity title.
 *   **description**: Description.
 *   **images**: Activity photos.
 *   **order**: Display order.
+*(Configured via `activities_config` for section titles)*
 
-### 4. `pricing_config` (Pricing Configuration)
+### 6. `pricing_config` (Pricing Configuration)
 *Unique*
 *   **cleaningFee**: Cleaning fee.
 *   **defaultPrice**: Default price (if outside defined periods).
 *   **details** (JSON): List of conditions (e.g., "Linens included").
 
-### 5. `pricing_periods` (Pricing Calendar)
+### 7. `pricing_periods` (Pricing Calendar)
 *List of pricing periods*
 *   **start**: Start date (MM-DD).
 *   **end**: End date (MM-DD).
 *   **price**: Price per night/week for this period.
 
-### 6. `location` (Location)
+### 8. `location` (Location)
 *Unique*
 *   **lat / lng**: GPS coordinates.
 *   **address**: Full address (HTML allowed).
 *   **zoom**: Map zoom level.
 
-### 7. `contact` (Contact Details)
+### 9. `contact` (Contact Details)
 *Unique*
 *   **email**: Email for receiving requests.
 *   **phone**: Displayed phone number.
 *   **name**: Contact name.
 *   **airbnbUrl**: Link to Airbnb calendar (optional).
+*   **captchaSiteKey / Secret**: Cloudflare Turnstile keys.
 
-### 8. `messages` (Contact Form)
+### 10. `faq` (Frequently Asked Questions)
+*List of questions*
+*   **question**: The question asked.
+*   **answer**: The answer.
+*   **order**: Display order.
+
+### 11. `messages` (Contact Form)
 *List of received messages*
 *   Stores requests sent via the site form.
 
