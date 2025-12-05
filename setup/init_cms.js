@@ -13,9 +13,7 @@ if (!ADMIN_EMAIL || !ADMIN_PASS) {
 }
 
 // Paths relative to this script (located in /setup)
-const ROOT_DIR = path.join(__dirname, '..');
 const CONFIG_PATH = path.join(__dirname, 'config.json');
-const SCHEMA_PATH = path.join(__dirname, 'pb_schema.json');
 const IMG_BASE_PATH = path.join(__dirname, 'img');
 
 function resolveImagePath(relativePath) {
@@ -46,46 +44,8 @@ async function main() {
         }
         console.log("✅ Authenticated.");
 
-        // 2. Import Schema
-        console.log("📜 Importing Schema...");
-        if (fs.existsSync(SCHEMA_PATH)) {
-            const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, 'utf8'));
-            for (const collection of schema) {
-                try {
-                    // Check if collection exists
-                    const existing = await fetch(`${PB_URL}/api/collections/${collection.name}`, {
-                        headers: { 'Authorization': token }
-                    }).then(r => r.ok ? r.json() : null);
-
-                    if (existing) {
-                        console.log(`🔄 Updating schema for ${collection.name}...`);
-                        await fetch(`${PB_URL}/api/collections/${existing.id}`, {
-                            method: 'PATCH',
-                            headers: { 
-                                'Content-Type': 'application/json',
-                                'Authorization': token
-                            },
-                            body: JSON.stringify(collection)
-                        });
-                    } else {
-                        console.log(`✨ Creating collection ${collection.name}...`);
-                        await fetch(`${PB_URL}/api/collections`, {
-                            method: 'POST',
-                            headers: { 
-                                'Content-Type': 'application/json',
-                                'Authorization': token
-                            },
-                            body: JSON.stringify(collection)
-                        });
-                    }
-                } catch (e) {
-                    console.log(`⚠️ Error importing collection ${collection.name}: ${e.message}`);
-                }
-            }
-            console.log("✅ Schema imported.");
-        } else {
-            console.warn("⚠️ pb_schema.json not found, skipping schema creation.");
-        }
+        // 2. Schema Import -> Moved to pb_migrations/1733414400_init_collections.js
+        console.log("📜 Schema checks handled by PocketBase migrations.");
 
         // 3. Read Config
         if (!fs.existsSync(CONFIG_PATH)) {

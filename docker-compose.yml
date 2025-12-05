@@ -26,4 +26,5 @@ services:
       - ./css:/pb_public/css
       - ./js:/pb_public/js
       - ./pb_hooks:/pb_hooks
+      - ./pb_migrations:/pb_migrations
     restart: unless-stopped
