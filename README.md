@@ -65,12 +65,6 @@ At Docker container startup, a script (`entrypoint.sh`) automatically injects th
 
 ---
 
-## 📖 Guide Utilisateur
-
-Pour savoir comment modifier le contenu du site (textes, images, prix) via PocketBase, consultez le **[Guide Utilisateur](GUIDE_UTILISATEUR.md)**.
-
----
-
 ## 📚 PocketBase Collections (Data Model)
 
 Here are the different sections you can modify via the administration interface:
