@@ -98,22 +98,7 @@ migrate((db) => {
                 { "name": "email", "type": "email" },
                 { "name": "phone", "type": "text" },
                 { "name": "name", "type": "text" },
-                { "name": "airbnbUrl", "type": "url" },
-                { "name": "captchaSiteKey", "type": "text" }
-            ]
-        },
-        // 8. Site Secrets (Admin Only)
-        {
-            "name": "site_secrets",
-            "type": "base",
-            "system": false,
-            "listRule": null,
-            "viewRule": null,
-            "createRule": null,
-            "updateRule": null,
-            "deleteRule": null,
-            "schema": [
-                { "name": "captchaSecretKey", "type": "text", "required": false }
+                { "name": "airbnbUrl", "type": "url" }
             ]
         },
         // 8. Location (Singleton)

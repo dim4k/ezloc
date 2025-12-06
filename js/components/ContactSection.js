@@ -158,18 +158,7 @@ export class ContactSection extends BaseComponent {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
-        // Check Captcha
-        if (window.TURNSTILE_SITE_KEY) {
-            const token = formData.get('cf-turnstile-response');
-            if (!token) {
-                alert("Veuillez valider le captcha.");
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnContent;
-                lucide.createIcons();
-                return;
-            }
-            data.captchaToken = token;
-        }
+
         
         // Get price estimation if available
         const priceContainer = this.querySelector("#price-estimation");
@@ -327,8 +316,7 @@ ${data.name}`;
                                     </button>
                                 </div>
                                 
-                                <!-- Captcha Container -->
-                                <div id="captcha-container" class="flex justify-center mt-4"></div>
+
                             </form>
 
                         <!-- Pricing Conditions -->
@@ -386,46 +374,8 @@ ${data.name}`;
         // Initialize calendars immediately
         setTimeout(() => this.initCalendars(), 0);
 
-        // Initialize Turnstile
-        if (window.TURNSTILE_SITE_KEY) {
-            this.initTurnstile();
-        }
+
     }
 
-    initTurnstile() {
-        // Check if script is already loaded
-        if (!document.querySelector('script[src*="turnstile"]')) {
-            const script = document.createElement('script');
-            script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-            script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
-            
-            script.onload = () => {
-                this.renderTurnstile();
-            };
-        } else {
-            this.renderTurnstile();
-        }
-    }
 
-    renderTurnstile() {
-        if (window.turnstile) {
-            const siteKey = window.TURNSTILE_SITE_KEY ? window.TURNSTILE_SITE_KEY.trim() : null;
-            console.log("[Turnstile] Initializing with Site Key:", siteKey);
-            
-            if (!siteKey) {
-                console.error("[Turnstile] No Site Key found!");
-                return;
-            }
-
-            window.turnstile.render('#captcha-container', {
-                sitekey: siteKey,
-                theme: 'light',
-            });
-        } else {
-            // Retry if not ready
-            setTimeout(() => this.renderTurnstile(), 100);
-        }
-    }
 }

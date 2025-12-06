@@ -136,7 +136,7 @@ export async function initCMS() {
                 name: contactRecord.name,
                 airbnbUrl: contactRecord.airbnbUrl
             };
-            if (contactRecord.captchaSiteKey) window.TURNSTILE_SITE_KEY = contactRecord.captchaSiteKey;
+
         }
 
         // 6. Location
