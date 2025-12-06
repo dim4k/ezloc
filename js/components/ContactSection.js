@@ -410,8 +410,16 @@ ${data.name}`;
 
     renderTurnstile() {
         if (window.turnstile) {
+            const siteKey = window.TURNSTILE_SITE_KEY ? window.TURNSTILE_SITE_KEY.trim() : null;
+            console.log("[Turnstile] Initializing with Site Key:", siteKey);
+            
+            if (!siteKey) {
+                console.error("[Turnstile] No Site Key found!");
+                return;
+            }
+
             window.turnstile.render('#captcha-container', {
-                sitekey: window.TURNSTILE_SITE_KEY,
+                sitekey: siteKey,
                 theme: 'light',
             });
         } else {
