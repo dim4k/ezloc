@@ -7,15 +7,23 @@ onRecordBeforeCreateRequest((e) => {
     }
 
     // 1. Check if Captcha is enabled (Secret Key exists in DB)
-    let contactRecord;
+    let secretRecord;
     try {
-        contactRecord = $app.dao().findFirstRecordByFilter("contact", "captchaSecretKey != ''");
+        // Try to get the first record from site_secrets
+        const result = $app.dao().findRecordsByFilter("site_secrets", "captchaSecretKey != ''", "-created", 1);
+        if (result && result.length > 0) {
+            secretRecord = result[0];
+        }
     } catch (e) {
-        // No record found with a key, so captcha is disabled.
+        // Collection might not exist or empty
+    }
+
+    if (!secretRecord) {
+        // No record found with a key, so captcha is disabled/not configured.
         return;
     }
 
-    const secretKey = contactRecord.get("captchaSecretKey");
+    const secretKey = secretRecord.get("captchaSecretKey");
     if (!secretKey) {
         return; // Double check
     }

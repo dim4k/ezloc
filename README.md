@@ -131,7 +131,7 @@ Here are the different sections you can modify via the administration interface:
 *   **phone**: Displayed phone number.
 *   **name**: Contact name.
 *   **airbnbUrl**: Link to Airbnb calendar (optional).
-*   **captchaSiteKey / Secret**: Cloudflare Turnstile keys.
+*   **captchaSiteKey**: Cloudflare Turnstile Site Key (The Secret Key is now in `site_secrets`).
 
 ### 10. `faq` (Frequently Asked Questions)
 *List of questions*
@@ -161,7 +161,8 @@ To work on the site locally with hot-reloading:
 To protect the contact form with Cloudflare Turnstile:
 1.  Go to the **Contact** collection in PocketBase.
 2.  Edit the single record.
-3.  Fill in `captchaSiteKey` and `captchaSecretKey` (obtained from Cloudflare).
+3.  Fill in `captchaSiteKey` (obtained from Cloudflare).
+4.  Go to the **site_secrets** collection and add your `captchaSecretKey`.
 4.  Restart the container to load the server-side hooks: `docker-compose restart`.
 
 ### 🚀 Deployment
