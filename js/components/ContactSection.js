@@ -9,7 +9,6 @@ export class ContactSection extends BaseComponent {
     }
 
     connectedCallback() {
-        console.log("ContactSection connectedCallback fired");
         super.connectedCallback();
         this.fetchAvailability();
     }
