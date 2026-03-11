@@ -20,6 +20,8 @@ services:
         SEO_ADDRESS_LOCALITY: ""
     ports:
       - "8090:8090"
+    environment:
+      - RESEND_API_KEY=${RESEND_API_KEY}
     volumes:
       - ./pb_data:/pb_data
       #- ./index.html:/pb_public/index.html (uncomment to override (SEO injection will be skipped))
