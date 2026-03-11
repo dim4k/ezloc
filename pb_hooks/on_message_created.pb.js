@@ -3,7 +3,7 @@
 /**
  * Hook: Send email notification via Resend API when a new contact message is created.
  */
-onRecordAfterCreateSuccess((e) => {
+onRecordAfterCreateRequest((e) => {
     const record = e.record;
 
     const apiKey = $os.getenv("RESEND_API_KEY");
