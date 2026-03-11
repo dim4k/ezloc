@@ -67,7 +67,7 @@ export class ActivitiesSection extends BaseComponent {
                         <img src="${firstImage}" alt="${activity.title}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" loading="lazy">
                     </div>
                     <h3 class="font-bold text-xl text-breizh-navy mb-3 font-serif group-hover:text-breizh-blue transition-colors">${activity.title}</h3>
-                    <p class="text-slate-600 text-sm leading-relaxed">${activity.description}</p>
+                    <div class="text-slate-600 text-sm leading-relaxed prose prose-sm max-w-none">${activity.description}</div>
                 </div>
             </div>
         `;
