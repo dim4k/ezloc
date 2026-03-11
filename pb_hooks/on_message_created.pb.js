@@ -89,7 +89,7 @@ onRecordAfterCreateRequest((e) => {
                 from: "contact@location-ile-aux-moines.fr",
                 to: [toEmail],
                 reply_to: email,
-                subject: `📨 Nouvelle demande de ${name} (${arrival} → ${departure})`,
+                subject: `📨 Nouvelle demande de réservation Ile Aux Moines : ${name} (${arrival} → ${departure})`,
                 html: html,
             }),
         });
