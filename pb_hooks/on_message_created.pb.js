@@ -25,6 +25,24 @@ onRecordAfterCreateRequest((e) => {
     const message        = record.getString("message");
     const priceEstimation = record.getString("price_estimation") || "Non calculée";
 
+    // Optional fields (migration 1792966000): guests and selected options
+    const { escapeHtml, optionsSummary } = require(`${__hooks}/lib/booking_emails.js`);
+    const guests = record.getInt("guests");
+    let options = [];
+    try {
+        options = JSON.parse(record.getString("options") || "[]") || [];
+    } catch (err) {
+        options = [];
+    }
+    const extraRows = [
+        guests ? ["Voyageurs", escapeHtml(guests)] : null,
+        options.length ? ["Options", optionsSummary(options).join("<br>")] : null,
+    ].filter(Boolean).map(([label, value]) => `
+      <tr>
+        <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; font-weight: bold;">${label}</td>
+        <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0;">${value}</td>
+      </tr>`).join("");
+
     const html = `
 <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b;">
   <div style="background: #1e3a5f; padding: 24px; border-radius: 12px 12px 0 0;">
@@ -51,7 +69,7 @@ onRecordAfterCreateRequest((e) => {
       <tr>
         <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; font-weight: bold;">Départ</td>
         <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0;">${departure}</td>
-      </tr>
+      </tr>${extraRows}
       <tr>
         <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; font-weight: bold;">Estimation</td>
         <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; font-weight: bold; color: #1e3a5f;">${priceEstimation}</td>

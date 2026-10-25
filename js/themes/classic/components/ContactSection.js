@@ -1,6 +1,6 @@
-import { BaseComponent } from "./BaseComponent.js";
-import { parseICal, calculatePrice } from "../utils/BookingUtils.js";
-import { PB_URL } from "../cms.js";
+import { BaseComponent } from "../../../shared/BaseComponent.js";
+import { calculatePrice } from "../../../utils/BookingUtils.js";
+import { fetchBookedDates, sendBookingRequest, buildMailtoLink, toDateKey } from "../../../shared/booking.js";
 
 export class ContactSection extends BaseComponent {
     constructor() {
@@ -14,27 +14,9 @@ export class ContactSection extends BaseComponent {
     }
 
     async fetchAvailability() {
-        const calendarUrl = this.config.contact.airbnbUrl;
-        if (!calendarUrl) return;
-
         try {
-            // Use local PocketBase proxy to avoid CORS and external dependency issues
-            const proxyUrl = `${PB_URL}/api/ical-proxy?url=${encodeURIComponent(
-                calendarUrl
-            )}&t=${Date.now()}`;
-            
-            const response = await fetch(proxyUrl);
-            
-            if (!response.ok) throw new Error(`Proxy error: ${response.status}`);
-            
-            // The proxy returns raw text (iCal format), not JSON with a 'contents' field like allorigins
-            const icalData = await response.text();
-
-            if (icalData && icalData.includes("BEGIN:VCALENDAR")) {
-                this.bookedDates = parseICal(icalData);
-                console.log(`📅 Calendar parsed: ${this.bookedDates.length} booked days found.`);
-                this.updateCalendarDates();
-            }
+            this.bookedDates = await fetchBookedDates(this.config.contact.airbnbUrl);
+            this.updateCalendarDates();
         } catch (error) {
             console.error("Error fetching Airbnb calendar:", error);
             // Even on error, the calendar is already initialized, so the user can still use the form.
@@ -132,15 +114,7 @@ export class ContactSection extends BaseComponent {
     updateCalendarDates() {
         if (!this.fp) return;
 
-        // Convert dates to YYYY-MM-DD strings
-        const disabledDates = this.bookedDates.map(d => {
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        });
-
-        this.fp.set('disable', disabledDates);
+        this.fp.set('disable', this.bookedDates.map(toDateKey));
     }
 
     async handleSubmit(e) {
@@ -171,64 +145,26 @@ export class ContactSection extends BaseComponent {
         data.price_estimation = priceText;
 
         try {
-            // Send to PocketBase
-            // We use the PB_URL from cms.js 
-            
-            const response = await fetch(`${PB_URL}/api/collections/messages/records`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
+            await sendBookingRequest(data);
 
-            if (response.ok) {
-                // Success
-                // Hide form, show success message
-                form.classList.add("hidden");
-                const successMsg = this.querySelector("#success-message");
-                successMsg.classList.remove("hidden");
-                lucide.createIcons(); // Re-render icons in success message
-                
-                form.reset();
-                this.updatePriceDisplay(null); // Reset price display
-            } else {
-                throw new Error("PocketBase submission failed");
-            }
-            
+            // Hide form, show success message
+            form.classList.add("hidden");
+            const successMsg = this.querySelector("#success-message");
+            successMsg.classList.remove("hidden");
+            lucide.createIcons(); // Re-render icons in success message
+
+            form.reset();
+            this.updatePriceDisplay(null); // Reset price display
         } catch (error) {
             console.error("Submission Error:", error);
             alert("Une erreur est survenue lors de l'envoi. Nous allons ouvrir votre client mail par défaut.");
-            this.openMailto(data, priceText);
+            window.location.href = buildMailtoLink(this.config.contact.email, data);
         }
 
         // Restore button state
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalBtnContent;
         lucide.createIcons();
-    }
-
-    openMailto(data, priceText) {
-        const subject = `Demande de réservation - ${data.name}`;
-        const body = `Bonjour,
-
-Je souhaiterais réserver un séjour.
-
-Voici les détails de ma demande :
-- Nom : ${data.name}
-- Email : ${data.email}
-- Arrivée : ${this.querySelector("#arrival-date").value}
-- Départ : ${this.querySelector("#departure-date").value}
-- Estimation prix : ${priceText}
-
-Message :
-${data.message}
-
-Cordialement,
-${data.name}`;
-
-        const mailtoLink = `mailto:${this.config.contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        window.location.href = mailtoLink;
     }
 
     render() {
@@ -305,7 +241,7 @@ ${data.name}`;
                                     <label class="block text-sm font-bold text-breizh-navy mb-2">${
                                         contact.form.message
                                     }</label>
-                                    <textarea name="message" rows="4" class="w-full px-4 py-3 rounded-lg border-gray-200 focus:border-breizh-blue focus:ring-breizh-blue bg-slate-50" placeholder="Bonjour, je souhaiterais réserver..."></textarea>
+                                    <textarea name="message" rows="4" required class="w-full px-4 py-3 rounded-lg border-gray-200 focus:border-breizh-blue focus:ring-breizh-blue bg-slate-50" placeholder="Bonjour, je souhaiterais réserver..."></textarea>
                                 </div>
 
                                 <div class="text-center pt-4">

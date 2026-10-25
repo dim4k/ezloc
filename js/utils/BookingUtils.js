@@ -52,6 +52,16 @@ export function parseICal(icalData) {
 }
 
 /**
+ * Parses a "DD/MM" (or "DD-MM") period boundary.
+ * @param {string} str - Period boundary string.
+ * @returns {{day: number, month: number}} Day (1-31) and month (1-12).
+ */
+export function parsePeriodDay(str) {
+    const [day, month] = String(str).split(/[/-]/).map(Number);
+    return { day, month };
+}
+
+/**
  * Checks if a date is within a specific DD/MM period.
  * @param {Date} date - The date to check.
  * @param {string} startStr - Start date string "DD/MM".
@@ -61,10 +71,9 @@ export function parseICal(icalData) {
 function isDateInPeriod(date, startStr, endStr) {
     const month = date.getMonth() + 1; // 1-12
     const day = date.getDate(); // 1-31
-    
-    // Parse DD/MM or DD-MM
-    const [startDay, startMonth] = startStr.split(/[/-]/).map(Number);
-    const [endDay, endMonth] = endStr.split(/[/-]/).map(Number);
+
+    const { day: startDay, month: startMonth } = parsePeriodDay(startStr);
+    const { day: endDay, month: endMonth } = parsePeriodDay(endStr);
 
     // Convert to comparable numbers (MMDD) for easier comparison
     const current = month * 100 + day;
@@ -78,6 +87,50 @@ function isDateInPeriod(date, startStr, endStr) {
         // Wrap around range (e.g. 20/12 to 05/01)
         return current >= start || current <= end;
     }
+}
+
+/**
+ * Stay rules (stay_rules collection) applying to the night starting on the given date.
+ * @param {Date} date - The night's date.
+ * @param {Array<{start: string, end: string, minNights: ?number, nightsMultiple: ?number}>} rules
+ * @returns {Array} Matching rules.
+ */
+export function getRulesForNight(date, rules = []) {
+    return rules.filter((rule) => isDateInPeriod(date, rule.start, rule.end));
+}
+
+/**
+ * Price of a booking option for a stay.
+ * @param {{price: number, unit: string}} option - unit: "stay" | "night" | "guest" | "guest_night".
+ * @param {number} nights - Number of nights.
+ * @param {number} guests - Number of guests.
+ * @returns {number}
+ */
+export function getOptionAmount(option, nights, guests = 1) {
+    const multiplier = {
+        stay: 1,
+        night: nights,
+        guest: guests,
+        guest_night: guests * nights,
+    }[option.unit] ?? 1;
+    return option.price * multiplier;
+}
+
+/**
+ * Returns the price of the night starting on the given date.
+ * @param {Date} date - The night's date.
+ * @param {Object} pricingConfig - The pricing configuration object.
+ * @returns {number} Nightly price.
+ */
+export function getNightlyPrice(date, pricingConfig) {
+    if (pricingConfig.periods) {
+        for (const period of pricingConfig.periods) {
+            if (isDateInPeriod(date, period.start, period.end)) {
+                return period.price; // Use the first matching period
+            }
+        }
+    }
+    return pricingConfig.defaultPrice;
 }
 
 /**
@@ -96,19 +149,7 @@ export function calculatePrice(startDate, endDate, pricingConfig) {
 
     // Iterate through each night
     while (currentDate < endDate) {
-        let nightlyPrice = pricingConfig.defaultPrice;
-
-        // Check if date matches any specific period
-        if (pricingConfig.periods) {
-            for (const period of pricingConfig.periods) {
-                if (isDateInPeriod(currentDate, period.start, period.end)) {
-                    nightlyPrice = period.price;
-                    break; // Use the first matching period
-                }
-            }
-        }
-
-        totalPrice += nightlyPrice;
+        totalPrice += getNightlyPrice(currentDate, pricingConfig);
         totalNights++;
         currentDate.setDate(currentDate.getDate() + 1);
     }

@@ -14,11 +14,9 @@
         <!-- Preload Critical Modules -->
         <link rel="modulepreload" href="js/app.js">
         <link rel="modulepreload" href="js/cms.js">
-        <link rel="modulepreload" href="js/components/BaseComponent.js">
-        <link rel="modulepreload" href="js/components/NavBar.js">
-        <link rel="modulepreload" href="js/components/WelcomeSection.js">
-        <link rel="modulepreload" href="js/components/DetailModal.js">
-        <link rel="modulepreload" href="js/components/FaqSection.js">
+        <link rel="modulepreload" href="js/theme.js">
+        <link rel="modulepreload" href="js/shared/BaseComponent.js">
+        <link rel="modulepreload" href="js/shared/booking.js">
         <link rel="modulepreload" href="js/utils/BookingUtils.js">
 
         <!-- Open Graph / Facebook -->
@@ -74,58 +72,22 @@
         <noscript><link rel="stylesheet" href="css/vendor/leaflet/leaflet.css"></noscript>
         <script src="js/vendor/leaflet.js" defer></script>
 
-        <!-- Google Fonts -->
+        <!-- Google Fonts (font families are loaded by the active theme, see js/themes/*/index.js) -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap"
-            rel="stylesheet"
-            media="print"
-            onload="this.media='all'"
-        />
-        <noscript>
-            <link
-                href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap"
-                rel="stylesheet"
-            />
-        </noscript>
-        
+
         <!-- Lucide Icons -->
         <script src="js/vendor/lucide.js" defer></script>
-
-        <!-- Flatpickr (Calendar) -->
-        <link rel="stylesheet" href="css/vendor/flatpickr.css" media="print" onload="this.media='all'">
-        <noscript><link rel="stylesheet" href="css/vendor/flatpickr.css"></noscript>
-        <script src="js/vendor/flatpickr.js" defer></script>
-        <script src="js/vendor/flatpickr-fr.js" defer></script>
-
-        <!-- AOS (Animate On Scroll) -->
-        <link href="css/vendor/aos.css" rel="stylesheet" media="print" onload="this.media='all'">
-        <noscript><link rel="stylesheet" href="css/vendor/aos.css"></noscript>
-        <script src="js/vendor/aos.js" defer></script>
 
         <!-- Custom Styles -->
         <link rel="preload" href="css/style.css" as="style" />
         <link rel="stylesheet" href="css/style.css" />
     </head>
-    <body class="bg-slate-50 font-sans text-slate-800 antialiased">
+    <body class="antialiased">
         <!-- L'application est montée ici -->
         <app-root></app-root>
 
-        <!-- Application Logic -->
+        <!-- Application Logic (theme-specific assets are loaded by js/theme.js) -->
         <script type="module" src="js/app.js"></script>
-        <script>
-            // Initialize AOS after content is loaded
-            document.addEventListener('DOMContentLoaded', function() {
-                setTimeout(() => {
-                    AOS.init({
-                        duration: 800,
-                        once: true,
-                        offset: 100,
-                        easing: 'ease-out-cubic'
-                    });
-                }, 100);
-            });
-        </script>
     </body>
 </html>

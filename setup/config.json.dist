@@ -75,7 +75,10 @@
     "welcome": {
         "title": "Villa Paradiso",
         "subtitle": "Luxe, Calme et Volupté",
-        "image": "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=2070&auto=format&fit=crop"
+        "image": "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=2070&auto=format&fit=crop",
+        "display_options": {
+            "theme": "classic"
+        }
     },
     "house_config": {
         "title": "Le Logement",
@@ -88,7 +91,8 @@
             "Wifi Fibre",
             "Climatisation",
             "Parking Privé"
-        ]
+        ],
+        "max_guests": 8
     },
     "activities_config": {
         "title": "La Région",
@@ -110,9 +114,9 @@
         "cleaningFee": 80,
         "defaultPrice": 200,
         "periods": [
-            { "start": "07-01", "end": "08-31", "price": 300 },
-            { "start": "12-20", "end": "01-05", "price": 250 },
-            { "start": "05-01", "end": "05-31", "price": 180 }
+            { "start": "01/07", "end": "31/08", "price": 300 },
+            { "start": "20/12", "end": "05/01", "price": 250 },
+            { "start": "01/05", "end": "31/05", "price": 180 }
         ],
         "details": [
             "Location à la semaine du samedi au samedi",
@@ -120,6 +124,13 @@
             "Ménage de fin de séjour inclus"
         ]
     },
+    "stay_rules": [
+        { "label": "location à la semaine uniquement", "start": "01/07", "end": "31/08", "nights_multiple": 7 },
+        { "label": "3 nuits minimum", "start": "01/01", "end": "31/12", "min_nights": 3 }
+    ],
+    "booking_options": [
+        { "name": "Lit bébé", "description": "Lit parapluie et chaise haute", "price": 20, "unit": "stay" }
+    ],
     "house_features": [
         {
             "id": "house",

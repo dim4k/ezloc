@@ -79,6 +79,9 @@ async function main() {
         if (config.welcome) {
             welcomeData.append('title', config.welcome.title);
             welcomeData.append('subtitle', config.welcome.subtitle);
+            if (config.welcome.display_options) {
+                welcomeData.append('display_options', JSON.stringify(config.welcome.display_options));
+            }
             if (config.welcome.image) {
                 const imgPath = resolveImagePath(config.welcome.image);
                 if (imgPath && fs.existsSync(imgPath)) {
@@ -96,6 +99,9 @@ async function main() {
              houseConfigData.append('title', config.house_config.title);
              houseConfigData.append('subtitle', config.house_config.subtitle);
              houseConfigData.append('amenities', JSON.stringify(config.house_config.amenities));
+             if (config.house_config.max_guests) {
+                 houseConfigData.append('max_guests', config.house_config.max_guests);
+             }
         }
         await safeFetch(`${PB_URL}/api/collections/house_config/records`, { method: 'POST', headers: { 'Authorization': token }, body: houseConfigData });
 
@@ -161,6 +167,23 @@ async function main() {
                     });
                 }
             }
+        }
+
+        // 4e. Stay rules & booking options (optional)
+        for (const rule of config.stay_rules || []) {
+            await safeFetch(`${PB_URL}/api/collections/stay_rules/records`, {
+                method: 'POST',
+                headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                body: JSON.stringify(rule)
+            });
+        }
+        const bookingOptions = config.booking_options || [];
+        for (let i = 0; i < bookingOptions.length; i++) {
+            await safeFetch(`${PB_URL}/api/collections/booking_options/records`, {
+                method: 'POST',
+                headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order: i, ...bookingOptions[i] })
+            });
         }
 
         // 5. Migrate House Features

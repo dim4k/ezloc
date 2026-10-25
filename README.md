@@ -82,12 +82,13 @@ Here are the different sections you can modify via the administration interface:
 *   **title**: Main title on the homepage banner.
 *   **subtitle**: Subtitle/Welcome message.
 *   **image**: Banner background image.
-*   **display_options**: Visual settings (JSON).
+*   **display_options**: Visual settings (JSON), e.g. `{ "theme": "pavillons", "animations": true }`. See [Themes](#-themes).
 
 ### 3. `house_config` (House Settings)
 *Unique*
 *   **title / subtitle**: Titles for the "The House" section.
 *   **amenities**: List of amenities (JSON).
+*   **max_guests** *(optional)*: Capacity. When set, the `pavillons` booking form shows a guests selector.
 
 ### 4. `house_features` (Highlights)
 *List of house highlights*
@@ -98,6 +99,8 @@ Here are the different sections you can modify via the administration interface:
 *   **thumbnail**: Main image.
 *   **gallery**: Gallery of associated images.
 *   **order**: Display order.
+
+> Image fields declare a `160x120` thumbnail size, used for the thumbnail strips (`?thumb=160x120`). Larger sizes are not used: the uploaded photos are already web-sized and PocketBase's re-encoded versions turned out heavier.
 
 ### 5. `activities` (Activities & Region)
 *List of nearby activities*
@@ -115,8 +118,8 @@ Here are the different sections you can modify via the administration interface:
 
 ### 7. `pricing_periods` (Pricing Calendar)
 *List of pricing periods*
-*   **start**: Start date (MM-DD).
-*   **end**: End date (MM-DD).
+*   **start**: Start date (DD/MM).
+*   **end**: End date (DD/MM). A period may wrap around the new year (e.g. 20/12 → 05/01).
 *   **price**: Price per night/week for this period.
 
 ### 8. `location` (Location)
@@ -142,6 +145,77 @@ Here are the different sections you can modify via the administration interface:
 ### 11. `messages` (Contact Form)
 *List of received messages*
 *   Stores requests sent via the site form.
+*   **guests** / **options** *(optional)*: Number of guests and selected options (JSON), sent by the `pavillons` theme.
+
+### 12. `stay_rules` (Stay Rules) *(optional)*
+*Enforced by the `pavillons` dates picker; empty = no rule.*
+*   **label**: Text shown to visitors (e.g. "location à la quinzaine uniquement").
+*   **start / end**: Period (DD/MM). A rule applies to every stay with at least one night in the period.
+*   **min_nights**: Minimum number of nights.
+*   **nights_multiple**: Stays must last a multiple of this number of nights (e.g. 14 = fortnight).
+
+### 13. `booking_options` (Booking Options) *(optional)*
+*Options the visitor can tick in the `pavillons` booking form; empty = no options section.*
+*   **name / description**: Displayed texts.
+*   **price**: Price in euros.
+*   **unit**: `stay` (once), `night`, `guest` or `guest_night`.
+*   **order**: Display order.
+
+> Collections 12–13 and the optional fields are added by `pb_migrations/1792966000_booking_rules_options.js`. The site works the same without them (an older database simply returns empty lists).
+
+---
+
+## ✉️ Emails (Resend)
+
+| Variable | Role |
+|---|---|
+| `RESEND_API_KEY` | Required for any email. |
+| `RESEND_TO_EMAIL` | Owner address receiving the new-request notification. |
+| `RESEND_FROM_EMAIL` | Sender (verified Resend domain). Default: `contact@location-ile-aux-moines.fr`. |
+| `RESEND_CONFIRMATION` | Set to `false` to disable the confirmation email sent to the guest. |
+
+*   `pb_hooks/on_message_created.pb.js`: notification to the owner (now includes guests and options).
+*   `pb_hooks/on_message_confirmation.pb.js`: confirmation to the guest (dates, estimate, conditions, address). The guest's free-text message is not echoed, user input is escaped and options are checked against `booking_options`, so the form cannot be used to send arbitrary content. The header image uses the PocketBase *Application URL* setting.
+
+---
+
+## 🎨 Themes
+
+The site ships with two themes rendering the same PocketBase data:
+
+| Theme | Description |
+|---|---|
+| `classic` (default) | Original design: Playfair Display / Lato, Flatpickr calendar, AOS animations. |
+| `pavillons` | Immersive maritime design: Fraunces / Inter, dates picker showing nightly prices and enforcing stay rules, "fully booked" notice, full-screen photo viewer, guests & options in the booking form, yearly pricing chart, CSS scroll animations. |
+
+**Choosing the theme**: in the admin, edit the `welcome` record and set `display_options` to:
+
+```json
+{ "theme": "pavillons" }
+```
+
+An empty or unknown value falls back to `classic`. With `pavillons`, `"animations": false` turns the animations off (they are also disabled for visitors who prefer reduced motion).
+
+**Previewing** another theme without changing the setting: add `?theme=pavillons` (or `?theme=classic`) to the URL.
+
+**Code structure**:
+
+```
+js/
+  app.js               # Bootstrap: loads CMS data, then the theme
+  theme.js             # Resolves the theme and loads its assets
+  cms.js               # PocketBase data (shared)
+  shared/              # Theme-independent logic: BaseComponent, booking (iCal, form submission)
+  utils/BookingUtils.js
+  themes/
+    classic/           # index.js (layout, components, assets) + components/
+    pavillons/         # index.js + components/, helpers.js, store.js
+css/
+  input.css            # Tailwind entry (classic-specific rules are scoped to [data-theme="classic"])
+  themes/pavillons.css # Pavillons styles not covered by Tailwind
+```
+
+To add a theme, create `js/themes/<name>/index.js` exporting `{ layout, components, styles, scripts, bodyClass, setup, afterMount }` and register it in `js/theme.js`.
 
 ---
 

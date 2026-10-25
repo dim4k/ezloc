@@ -1,0 +1,435 @@
+/*
+ * PAVILLONS THEME — styles not handled by Tailwind utilities.
+ * Loaded only when the theme is active (see js/themes/pavillons/index.js).
+ * Animations only run when <html> has the `pav-motion` class
+ * (set unless the visitor prefers reduced motion).
+ */
+
+html[data-theme="pavillons"] {
+    scroll-behavior: smooth;
+    scroll-padding-top: 72px;
+}
+
+/* --- Typography --- */
+.pav-h1,
+.pav-h2,
+.pav-h3 {
+    font-family: Fraunces, Georgia, serif;
+    font-weight: 400;
+    margin: 0;
+}
+
+.pav-h1 {
+    font-size: clamp(46px, 8vw, 112px);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+}
+
+.pav-h2 {
+    font-size: clamp(36px, 4.6vw, 68px);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+}
+
+.pav-h3 {
+    font-size: clamp(26px, 2.6vw, 40px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+}
+
+.pav-rich p { margin: 0 0 0.75em; }
+.pav-rich p:last-child { margin-bottom: 0; }
+.pav-rich a { color: inherit; text-decoration: underline; }
+
+/* --- Controls --- */
+/* :where() keeps specificity at 0 so Tailwind display utilities (e.g. `hidden md:inline-flex`) win */
+:where(.pav-btn) {
+    display: inline-flex;
+}
+.pav-btn {
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 12px 22px;
+    border-radius: 8px;
+    background: #F2C230;
+    color: #0C1823;
+    font-weight: 700;
+    text-align: center;
+    transition: background-color 0.15s ease, transform 0.2s ease;
+}
+.pav-btn:hover { background: #FFD95C; }
+.pav-btn:active { transform: translateY(1px); }
+.pav-btn:disabled { background: #DDD8CD; color: #4E5A66; cursor: not-allowed; }
+
+.pav-round {
+    width: 48px;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #FFFFFF;
+    color: #0C1823;
+    box-shadow: 0 6px 18px -8px rgba(12, 24, 35, 0.45);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.pav-round:hover { transform: translateY(-50%) scale(1.06); }
+.pav-round:disabled { opacity: 0; pointer-events: none; }
+
+html[data-theme="pavillons"] :focus-visible {
+    outline: 3px solid #F2C230;
+    outline-offset: 2px;
+}
+
+.pav-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    letter-spacing: 0;
+}
+
+.pav-noscrollbar { scrollbar-width: none; }
+.pav-noscrollbar::-webkit-scrollbar { display: none; }
+
+/* --- Header & mobile menu --- */
+.pav-header {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.pav-header.is-solid {
+    background-color: rgba(12, 24, 35, 0.94);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.pav-menu { display: none; }
+.pav-menu.is-open { display: flex; }
+
+/* --- Hero --- */
+.pav-hero-scrim {
+    background: linear-gradient(180deg, rgba(12, 24, 35, 0.55) 0%, rgba(12, 24, 35, 0) 22%, rgba(12, 24, 35, 0) 42%, rgba(12, 24, 35, 0.9) 100%);
+}
+
+.pav-flag {
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+@media (min-width: 768px) {
+    .pav-flag { width: 36px; height: 36px; }
+}
+
+.pav-word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+}
+.pav-word > span { display: inline-block; }
+
+.pav-cue {
+    position: relative;
+    display: block;
+    width: 2px;
+    height: 48px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.25);
+}
+.pav-cue > span {
+    position: absolute;
+    inset: 0;
+    background: #F2C230;
+}
+
+/* --- House explorer --- */
+.pav-tab[aria-selected="true"] {
+    background: #0C1823;
+    border-color: #0C1823;
+    color: #FFFFFF;
+}
+.pav-tab[aria-selected="false"]:hover { background: #ECE8DF; }
+
+.pav-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background: #D6D0C4;
+    transition: width 0.25s ease, background-color 0.25s ease;
+}
+.pav-dot.is-active { width: 20px; background: #0C1823; }
+
+.pav-thumb {
+    border: 3px solid transparent;
+    opacity: 0.7;
+    transition: border-color 0.2s ease, opacity 0.2s ease;
+}
+.pav-thumb:hover { opacity: 1; }
+.pav-thumb.is-active { border-color: #F2C230; opacity: 1; }
+
+/* --- FAQ --- */
+.pav-collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+}
+.pav-collapse > div { overflow: hidden; }
+.pav-faq-item.is-open .pav-collapse { grid-template-rows: 1fr; }
+.pav-chevron { transition: transform 0.25s ease; }
+.pav-faq-item.is-open .pav-chevron { transform: rotate(180deg); }
+
+/* --- Form --- */
+.pav-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+.pav-field input,
+.pav-field textarea {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 15px 14px;
+    background: #FFFFFF;
+    color: #0C1823;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 400;
+}
+.pav-field textarea { resize: vertical; }
+
+.pav-stepper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid #F2C230;
+    color: #F2C230;
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+.pav-stepper:hover { background: rgba(242, 194, 48, 0.12); }
+.pav-stepper:disabled { border-color: #4E5A66; color: #4E5A66; background: none; cursor: not-allowed; }
+
+.pav-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    border: 1.5px solid #2E3A46;
+    border-radius: 14px;
+    background: #16283A;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+.pav-option:has(input:checked) { border-color: #F2C230; }
+.pav-option:has(input:focus-visible) { outline: 3px solid #F2C230; outline-offset: 2px; }
+.pav-check {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-top: 1px;
+    border: 1.5px solid #4E5A66;
+    border-radius: 6px;
+    color: transparent;
+}
+.pav-option input:checked + .pav-check { background: #F2C230; border-color: #F2C230; color: #0C1823; }
+
+/* --- Dates sheet --- */
+.pav-sheet {
+    width: 100%;
+    max-width: 100%;
+    height: 88svh;
+    max-height: 88svh;
+    margin: auto 0 0;
+    padding: 0;
+    border: none;
+    border-radius: 18px 18px 0 0;
+    overflow: hidden;
+    background: #F5F3EE;
+    color: #0C1823;
+}
+.pav-sheet::backdrop { background: rgba(12, 24, 35, 0.62); }
+@media (min-width: 768px) {
+    .pav-sheet {
+        width: min(840px, 92vw);
+        height: min(780px, 90vh);
+        max-height: 90vh;
+        margin: auto;
+        border-radius: 16px;
+    }
+}
+
+.pav-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    width: 100%;
+    height: 52px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: background-color 0.15s ease;
+}
+.pav-day small {
+    min-height: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #4E5A66;
+}
+.pav-day:not(:disabled):hover { box-shadow: inset 0 0 0 1px #0C1823; }
+.pav-day[data-state="in"] { background: #E5DFD2; border-radius: 0; }
+.pav-day[data-state="edge"] { background: #0C1823; color: #FFFFFF; }
+.pav-day[data-state="edge"] small { color: #F2C230; }
+.pav-day[data-state="departure"] { background: #FFFFFF; box-shadow: inset 0 0 0 2px #F2C230; }
+.pav-day:disabled { color: #9AA2AA; cursor: not-allowed; }
+.pav-day:disabled small { visibility: hidden; }
+.pav-day.is-booked { color: #6B7480; text-decoration: line-through; }
+
+/* --- Photo lightbox --- */
+.pav-lightbox {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: #070E15;
+}
+.pav-lightbox::backdrop { background: #070E15; }
+.pav-lightbox-nav {
+    position: absolute;
+    top: 50%;
+    display: none;
+    width: 52px;
+    height: 52px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+    transform: translateY(-50%);
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+.pav-lightbox-nav:hover { background: rgba(255, 255, 255, 0.22); }
+.pav-lightbox-nav:disabled { opacity: 0; pointer-events: none; }
+@media (min-width: 768px) {
+    .pav-lightbox-nav:not([hidden]) { display: inline-flex; }
+}
+/* The pinch hint only makes sense on touch screens */
+@media (hover: hover) {
+    .pav-touch-hint { display: none; }
+}
+html.pav-motion .pav-lightbox[open] { animation: pav-backdrop 0.25s ease; }
+
+.pav-zoom-btn { cursor: zoom-in; }
+
+/* --- Mobile booking bar --- */
+.pav-bookbar { transition: transform 0.3s ease; }
+.pav-bookbar.is-hidden { transform: translateY(110%); }
+
+/* --- Map marker --- */
+.pav-marker { position: relative; }
+.pav-pin {
+    position: absolute;
+    inset: 0;
+    background: #F2C230;
+    border: 4px solid #0C1823;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+.pav-pulse {
+    position: absolute;
+    left: 2px;
+    top: 22px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(29, 79, 160, 0.35);
+}
+
+/* --- Motion --- */
+@keyframes pav-kb { from { transform: scale(1.14); } to { transform: scale(1); } }
+@keyframes pav-rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+@keyframes pav-up { from { transform: translateY(105%); } to { transform: none; } }
+@keyframes pav-flutter { 0%, 100% { transform: skewY(0deg) scaleX(1); } 50% { transform: skewY(-6deg) scaleX(0.95); } }
+@keyframes pav-cue {
+    0% { transform: scaleY(0); transform-origin: top; }
+    45% { transform: scaleY(1); transform-origin: top; }
+    55% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+}
+@keyframes pav-pulse { from { transform: scale(0.6); opacity: 0.7; } to { transform: scale(2.6); opacity: 0; } }
+@keyframes pav-fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes pav-menu { from { clip-path: circle(0% at 92% 4%); } to { clip-path: circle(150% at 92% 4%); } }
+@keyframes pav-sheet-up { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes pav-pop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes pav-backdrop { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pav-parallax { to { transform: translateY(220px); } }
+
+html.pav-motion .pav-kenburns { animation: pav-kb 16s cubic-bezier(0.2, 0.6, 0.2, 1) both; }
+html.pav-motion .pav-in { animation: pav-rise 1s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) both; }
+html.pav-motion .pav-word > span { animation: pav-up 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+html.pav-motion .pav-flag {
+    transform-origin: left center;
+    animation: pav-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both, pav-flutter 3.2s ease-in-out 1.3s infinite;
+}
+html.pav-motion .pav-flag:nth-child(2) { animation-delay: 0.12s, 1.6s; }
+html.pav-motion .pav-flag:nth-child(3) { animation-delay: 0.24s, 1.9s; }
+html.pav-motion .pav-cue > span { animation: pav-cue 2.2s ease-in-out infinite; }
+html.pav-motion .pav-pulse { animation: pav-pulse 2.4s ease-out infinite; }
+html.pav-motion .pav-fade { animation: pav-fade 0.45s ease both; }
+html.pav-motion .pav-menu.is-open { animation: pav-menu 0.55s cubic-bezier(0.6, 0, 0.2, 1) both; }
+html.pav-motion .pav-menu.is-open .pav-menu-link { animation: pav-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) both; }
+html.pav-motion .pav-sheet[open] { animation: pav-sheet-up 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
+html.pav-motion .pav-sheet[open]::backdrop { animation: pav-backdrop 0.3s ease; }
+@media (min-width: 768px) {
+    html.pav-motion .pav-sheet[open] { animation: pav-pop 0.3s ease; }
+}
+
+/* Scroll reveals (classes toggled by an IntersectionObserver) */
+html.pav-motion .pav-reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+html.pav-motion .pav-unveil {
+    clip-path: inset(12% 8% 12% 8%);
+    transform: scale(1.12);
+    transition: clip-path 1.2s cubic-bezier(0.2, 0.7, 0.2, 1), transform 1.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+/* The observed .pav-wipe element stays visible: a fully clipped element would never "intersect" */
+html.pav-motion .pav-wipe .pav-wipe-target {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 1.4s cubic-bezier(0.6, 0, 0.2, 1);
+}
+html.pav-motion .pav-reveal.is-in,
+html.pav-motion .pav-unveil.is-in,
+html.pav-motion .pav-wipe.is-in .pav-wipe-target {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 0 0);
+}
+
+/* Hero parallax, where scroll-driven animations are supported */
+@supports (animation-timeline: scroll()) {
+    html.pav-motion .pav-parallax {
+        animation: pav-parallax linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0px 900px;
+    }
+}

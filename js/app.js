@@ -1,56 +1,29 @@
-import { NavBar } from "./components/NavBar.js";
-import { WelcomeSection } from "./components/WelcomeSection.js";
-import { HouseSection } from "./components/HouseSection.js";
-import { ActivitiesSection } from "./components/ActivitiesSection.js";
-import { MapSection } from "./components/MapSection.js";
-import { FaqSection } from "./components/FaqSection.js";
-import { ContactSection } from "./components/ContactSection.js";
-import { SiteFooter } from "./components/SiteFooter.js";
-import { DetailModal } from "./components/DetailModal.js";
-
-
-
 import { initCMS, SITE_CONFIG } from "./cms.js";
-
-// -- App Root (Orchestrator) --
-class AppRoot extends HTMLElement {
-    connectedCallback() {
-        this.innerHTML = `
-            <nav-bar></nav-bar>
-            <main>
-                <welcome-section></welcome-section>
-                <house-section></house-section>
-                <activities-section></activities-section>
-                <map-section></map-section>
-                <faq-section></faq-section>
-                <contact-section></contact-section>
-            </main>
-            <site-footer></site-footer>
-            <detail-modal></detail-modal>
-        `;
-    }
-}
+import { loadTheme } from "./theme.js";
 
 // Initialize App
 (async () => {
     // Try to fetch data from CMS
     await initCMS();
 
+    // Load the theme selected in PocketBase (welcome.display_options.theme)
+    const theme = await loadTheme(SITE_CONFIG.display);
+
     // Register Components after config is potentially updated
-    customElements.define("nav-bar", NavBar);
-    customElements.define("welcome-section", WelcomeSection);
-    customElements.define("house-section", HouseSection);
-    customElements.define("activities-section", ActivitiesSection);
-    customElements.define("map-section", MapSection);
-    customElements.define("faq-section", FaqSection);
-    customElements.define("contact-section", ContactSection);
-    customElements.define("site-footer", SiteFooter);
-    customElements.define("detail-modal", DetailModal);
-    customElements.define("app-root", AppRoot);
+    for (const [tag, component] of Object.entries(theme.components)) {
+        customElements.define(tag, component);
+    }
+
+    // -- App Root (Orchestrator) --
+    customElements.define("app-root", class AppRoot extends HTMLElement {
+        connectedCallback() {
+            this.innerHTML = theme.layout;
+        }
+    });
 
     // Global Fallback Check
     const appRoot = document.querySelector("app-root");
-    
+
     // Check if critical config is missing (e.g. Identity or Welcome)
     // If mainly empty, show a message
     if (!SITE_CONFIG.identity || Object.keys(SITE_CONFIG).length === 0) {
@@ -67,5 +40,12 @@ class AppRoot extends HTMLElement {
             `;
             if (window.lucide) lucide.createIcons();
         }
+        return;
     }
+
+    if (theme.afterMount) theme.afterMount();
+
+    // Content is rendered after page load: honour a "#section" link once the section exists
+    const target = window.location.hash && document.getElementById(window.location.hash.slice(1));
+    if (target) target.scrollIntoView({ behavior: "instant" });
 })();

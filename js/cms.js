@@ -43,6 +43,15 @@ const getFileUrl = (record, filename) => {
 };
 
 /**
+ * Returns a resized version of a PocketBase image (size declared in the migrations: 160x120).
+ * PocketBase serves the original for undeclared sizes.
+ */
+export const thumbUrl = (url, size) => {
+    if (!url || !url.includes("/api/files/")) return url;
+    return `${url}${url.includes("?") ? "&" : "?"}thumb=${size}`;
+};
+
+/**
  * Initialize the CMS connection and update the SITE_CONFIG
  */
 export async function initCMS() {
@@ -61,7 +70,9 @@ export async function initCMS() {
             pricingPeriodsRecords,
             featuresRecords,
             activitiesRecords,
-            faqRecords
+            faqRecords,
+            stayRulesRecords,
+            bookingOptionsRecords
         ] = await Promise.all([
             fetchSingle('site_identity'),
             fetchSingle('welcome'),
@@ -73,7 +84,10 @@ export async function initCMS() {
             fetchList('pricing_periods', 'start'),
             fetchList('house_features', 'order'),
             fetchList('activities', 'order'),
-            fetchList('faq', 'order')
+            fetchList('faq', 'order'),
+            // Optional collections (added later): an empty list when missing
+            fetchList('stay_rules', 'created'),
+            fetchList('booking_options', 'order')
         ]);
 
         // Populate SITE_CONFIG based on fetched data
@@ -111,12 +125,16 @@ export async function initCMS() {
             };
         }
 
+        // Visual settings (e.g. { "theme": "pavillons" })
+        SITE_CONFIG.display = welcomeRecord?.display_options || {};
+
         // 3. House Config
         if (houseConfigRecord) {
             SITE_CONFIG.house_config = {
                 title: houseConfigRecord.title,
                 subtitle: houseConfigRecord.subtitle,
-                amenities: houseConfigRecord.amenities || []
+                amenities: houseConfigRecord.amenities || [],
+                maxGuests: houseConfigRecord.max_guests || null
             };
         }
 
@@ -193,6 +211,24 @@ export async function initCMS() {
                 answer: f.answer
             }));
         }
+
+        // 11. Stay rules (e.g. fortnight only in summer)
+        SITE_CONFIG.stayRules = (stayRulesRecords || []).map(r => ({
+            label: r.label,
+            start: r.start,
+            end: r.end,
+            minNights: r.min_nights || null,
+            nightsMultiple: r.nights_multiple || null
+        }));
+
+        // 12. Booking options (e.g. linen)
+        SITE_CONFIG.bookingOptions = (bookingOptionsRecords || []).map(o => ({
+            id: o.id,
+            name: o.name,
+            description: o.description,
+            price: o.price,
+            unit: o.unit
+        }));
 
         console.log("✅ CMS Data received and mapped.");
 

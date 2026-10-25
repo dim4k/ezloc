@@ -1,4 +1,4 @@
-import { BaseComponent } from "./BaseComponent.js";
+import { BaseComponent } from "../../../shared/BaseComponent.js";
 
 export class FaqSection extends BaseComponent {
     connectedCallback() {
