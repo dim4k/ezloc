@@ -11,18 +11,21 @@ html[data-theme="pavillons"] {
 }
 
 /* --- Typography --- */
+/* No margin here: Tailwind's base already resets headings, and utilities (mt-*, mb-*) must win */
 .pav-h1,
 .pav-h2,
 .pav-h3 {
     font-family: Fraunces, Georgia, serif;
     font-weight: 400;
-    margin: 0;
 }
 
 .pav-h1 {
     font-size: clamp(46px, 8vw, 112px);
-    line-height: 0.98;
+    line-height: 1.04;
     letter-spacing: -0.03em;
+}
+@media (min-width: 768px) {
+    .pav-h1 { line-height: 0.98; }
 }
 
 .pav-h2 {
@@ -113,6 +116,33 @@ html[data-theme="pavillons"] :focus-visible {
 .pav-hero-scrim {
     background: linear-gradient(180deg, rgba(12, 24, 35, 0.55) 0%, rgba(12, 24, 35, 0) 22%, rgba(12, 24, 35, 0) 42%, rgba(12, 24, 35, 0.9) 100%);
 }
+
+/* Mobile hero stories */
+.pav-story {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+.pav-story.is-active { opacity: 1; }
+.pav-story-scrim {
+    background: linear-gradient(180deg, rgba(12, 24, 35, 0.6) 0%, rgba(12, 24, 35, 0) 22%, rgba(12, 24, 35, 0) 45%, rgba(12, 24, 35, 0.92) 100%);
+}
+.pav-story-bar {
+    flex: 1;
+    height: 3px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.35);
+}
+.pav-story-bar > span {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: #FFFFFF;
+}
+.pav-story-bar.is-done > span,
+.pav-story-bar.is-active > span { width: 100%; }
 
 .pav-flag {
     display: block;
@@ -380,6 +410,13 @@ html.pav-motion .pav-lightbox[open] { animation: pav-backdrop 0.25s ease; }
 @keyframes pav-pop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
 @keyframes pav-backdrop { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pav-parallax { to { transform: translateY(220px); } }
+@keyframes pav-story-progress { from { width: 0; } to { width: 100%; } }
+
+@keyframes pav-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+html.pav-motion .pav-scroll-hint { animation: pav-bounce 1.8s ease-in-out infinite; }
+
+/* Stories: crossfade between photos (no zoom), the progress bar fills in 6 s (see PavHero) */
+html.pav-motion .pav-story-bar.is-active > span { animation: pav-story-progress 6s linear both; }
 
 html.pav-motion .pav-kenburns { animation: pav-kb 16s cubic-bezier(0.2, 0.6, 0.2, 1) both; }
 html.pav-motion .pav-in { animation: pav-rise 1s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) both; }
@@ -425,11 +462,13 @@ html.pav-motion .pav-wipe.is-in .pav-wipe-target {
     clip-path: inset(0 0 0 0);
 }
 
-/* Hero parallax, where scroll-driven animations are supported */
+/* Hero parallax (desktop only), where scroll-driven animations are supported */
 @supports (animation-timeline: scroll()) {
-    html.pav-motion .pav-parallax {
-        animation: pav-parallax linear both;
-        animation-timeline: scroll(root);
-        animation-range: 0px 900px;
+    @media (min-width: 768px) {
+        html.pav-motion .pav-parallax {
+            animation: pav-parallax linear both;
+            animation-timeline: scroll(root);
+            animation-range: 0px 900px;
+        }
     }
 }
