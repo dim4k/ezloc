@@ -220,7 +220,7 @@ export class PavContact extends BaseComponent {
                             ${optionsField}
                             <div data-estimate class="rounded-2xl border border-white/10 p-5 text-sm leading-relaxed text-pav-muted-dark" aria-live="polite"></div>
                             <label class="pav-field">${form.name || "Nom"}
-                                <input type="text" name="name" required autocomplete="name">
+                                <input type="text" name="name" required autocomplete="name" maxlength="120">
                             </label>
                             <label class="pav-field">${form.email || "Email"}
                                 <input type="email" name="email" required autocomplete="email">
@@ -229,7 +229,7 @@ export class PavContact extends BaseComponent {
                                 <input type="tel" name="phone" autocomplete="tel" inputmode="tel" maxlength="40">
                             </label>
                             <label class="pav-field">${form.message || "Message"}
-                                <textarea name="message" rows="4" required placeholder="Bonjour, je souhaiterais réserver…"></textarea>
+                                <textarea name="message" rows="4" required maxlength="5000" placeholder="Bonjour, je souhaiterais réserver…"></textarea>
                             </label>
                             <p data-error class="hidden rounded-lg bg-[#3A1F24] p-4 text-sm leading-relaxed" role="alert"></p>
                             <button type="submit" class="pav-btn mt-2 min-h-14 text-base">${form.submit || "Envoyer"}</button>

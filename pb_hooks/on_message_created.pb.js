@@ -21,15 +21,24 @@ onRecordCreateRequest((e) => {
         return;
     }
 
-    const { buildNotificationEmail } = require(`${__hooks}/lib/booking_emails.js`);
+    const { buildNotificationEmail, pickOptions } = require(`${__hooks}/lib/booking_emails.js`);
 
     // Optional fields (migrations 1792966000 and 1793100000): guests, selected options and phone
-    let options = [];
+    let requested = [];
     try {
-        options = JSON.parse(record.getString("options") || "[]") || [];
+        requested = JSON.parse(record.getString("options") || "[]") || [];
     } catch (err) {
-        options = [];
+        requested = [];
     }
+    // Only options that really exist, with their prices from the database (the request payload comes from the browser)
+    let catalog = [];
+    try {
+        catalog = $app.findRecordsByFilter("booking_options", "id != ''", "order", 100, 0)
+            .map((o) => ({ name: o.getString("name"), price: o.getFloat("price"), unit: o.getString("unit") }));
+    } catch (err) {
+        // collection not created yet
+    }
+    const options = pickOptions(requested, catalog);
 
     const name = record.getString("name");
     const email = record.getString("email");

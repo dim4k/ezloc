@@ -192,6 +192,8 @@ The booking form is public, so requests are filtered before they are saved or em
 
 *   **Honeypot**: a hidden `website` field that people never see; requests that fill it are rejected.
 *   **Per address**: at most 3 requests per email address in 24 h, and the guest confirmation is sent only once per address in 24 h.
+*   **Size limits** (`pb_migrations/1793500000_message_limits.js`): name 120 characters, dates 60, message 5 000, options 10 KB.
+*   **Prices from the database**: both emails list the ticked options with their name and price from `booking_options`, whatever the browser sent; the owner email marks the estimate as computed by the visitor's browser.
 *   **Per IP**: PocketBase rate limiter, enabled by `pb_migrations/1793300000_rate_limits.js` (3 booking requests per 10 minutes, 30 calendar requests per minute, plus PocketBase's defaults). Adjust in *Dashboard > Settings > Application > Rate limiting*.
 
 Rejected visitors get an error message with the "send by email" fallback link, so a false positive never loses a request.

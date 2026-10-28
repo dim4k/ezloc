@@ -26,7 +26,7 @@ onRecordCreateRequest((e) => {
         return;
     }
 
-    const { buildConfirmationEmail } = require(`${__hooks}/lib/booking_emails.js`);
+    const { buildConfirmationEmail, pickOptions } = require(`${__hooks}/lib/booking_emails.js`);
     // Singletons (site_identity, contact…): latest record, or null
     const latest = (collection) => {
         try {
@@ -49,15 +49,15 @@ onRecordCreateRequest((e) => {
     const pricing = latest("pricing_config");
     const welcome = latest("welcome");
 
-    // Only keep options that really exist (the request payload comes from the browser)
-    let knownOptions = [];
+    // Only options that really exist, with their prices from the database (the request payload comes from the browser)
+    let catalog = [];
     try {
-        knownOptions = $app.findRecordsByFilter("booking_options", "id != ''", "order", 100, 0).map((o) => o.getString("name"));
+        catalog = $app.findRecordsByFilter("booking_options", "id != ''", "order", 100, 0)
+            .map((o) => ({ name: o.getString("name"), price: o.getFloat("price"), unit: o.getString("unit") }));
     } catch (err) {
         // collection not created yet
     }
-    const options = parseJson(record.getString("options"), [])
-        .filter((option) => option && knownOptions.indexOf(option.name) !== -1);
+    const options = pickOptions(parseJson(record.getString("options"), []), catalog);
 
     const appUrl = ($app.settings().meta.appURL || "").replace(/\/$/, "");
     const image = welcome ? welcome.getString("image") : "";

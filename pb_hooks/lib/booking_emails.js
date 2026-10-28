@@ -21,15 +21,29 @@ function escapeWithBreaks(value) {
 
 const OPTION_UNITS = { stay: "/ séjour", night: "/ nuit", guest: "/ pers.", guest_night: "/ pers. / nuit" };
 
+/** "1 250 €", "7,50 €" */
 function formatPrice(amount) {
-    return String(Math.round(amount)).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " €";
+    const [units, cents] = (Math.round(Number(amount) * 100) / 100).toFixed(2).split(".");
+    return units.replace(/\B(?=(\d{3})+(?!\d))/g, " ") + (cents === "00" ? "" : "," + cents) + " €";
 }
 
-/** "Option linge (90 €)" lines for both emails. */
+/**
+ * Options the visitor ticked, as defined in the `booking_options` collection: the request only tells
+ * which options were picked, names and prices always come from the database.
+ * @param {Array<{name: string}>} requested - `messages.options` as sent by the browser.
+ * @param {Array<{name: string, price: number, unit: string}>} catalog - `booking_options` records.
+ * @returns {Array<{name: string, price: number, unit: string}>}
+ */
+function pickOptions(requested, catalog) {
+    const names = (Array.isArray(requested) ? requested : []).map((option) => option && option.name);
+    return (catalog || []).filter((option) => names.indexOf(option.name) !== -1);
+}
+
+/** "Linge de maison (15 € / pers.)" lines for both emails. */
 function optionsSummary(options) {
     return (options || []).map((option) => {
-        const amount = typeof option.amount === "number" ? ` (${formatPrice(option.amount)})` : "";
-        return `${escapeHtml(option.name, 80)}${amount}`;
+        const price = typeof option.price === "number" ? ` (${formatPrice(option.price)} ${OPTION_UNITS[option.unit] || ""})`.replace(" )", ")") : "";
+        return `${escapeHtml(option.name, 80)}${escapeHtml(price)}`;
     });
 }
 
@@ -50,7 +64,7 @@ function row(label, value) {
  * @param {string} data.arrival
  * @param {string} data.departure
  * @param {number} [data.guests]
- * @param {Array<{name: string, amount?: number}>} [data.options]
+ * @param {Array<{name: string, price: number, unit: string}>} [data.options] - From pickOptions().
  * @param {string} [data.estimate]
  * @param {string[]} [data.conditions]
  * @param {string} [data.address]
@@ -150,7 +164,7 @@ function subjectText(value, maxLength) {
  * @param {string} [data.estimate]
  * @param {string} [data.phone]
  * @param {number} [data.guests]
- * @param {Array<{name: string, amount?: number}>} [data.options]
+ * @param {Array<{name: string, price: number, unit: string}>} [data.options] - From pickOptions().
  * @returns {{subject: string, html: string}}
  */
 function buildNotificationEmail(data) {
@@ -203,7 +217,7 @@ function buildNotificationEmail(data) {
         <td style="${cell}">${departure}</td>
       </tr>${extraRows}
       <tr>
-        <td style="${cell} font-weight: bold;">Estimation</td>
+        <td style="${cell} font-weight: bold;">Estimation<br><span style="font-weight: normal; font-size: 12px; color: #64748b;">calculée par le navigateur du visiteur, à vérifier</span></td>
         <td style="${cell} font-weight: bold; color: #1e3a5f;">${estimate}</td>
       </tr>
     </table>
@@ -232,4 +246,4 @@ function buildNotificationEmail(data) {
     return { subject, html };
 }
 
-module.exports = { escapeHtml, optionsSummary, buildConfirmationEmail, buildNotificationEmail };
+module.exports = { escapeHtml, pickOptions, optionsSummary, buildConfirmationEmail, buildNotificationEmail };

@@ -213,7 +213,7 @@ export class ContactSection extends BaseComponent {
                                         <label class="block text-sm font-bold text-breizh-navy mb-2">${
                                             contact.form.name
                                         }</label>
-                                        <input type="text" name="name" required class="w-full px-4 py-3 rounded-lg border-gray-200 focus:border-breizh-blue focus:ring-breizh-blue transition-colors bg-slate-50" placeholder="Votre nom">
+                                        <input type="text" name="name" required maxlength="120" class="w-full px-4 py-3 rounded-lg border-gray-200 focus:border-breizh-blue focus:ring-breizh-blue transition-colors bg-slate-50" placeholder="Votre nom">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-bold text-breizh-navy mb-2">${
@@ -245,7 +245,7 @@ export class ContactSection extends BaseComponent {
                                     <label class="block text-sm font-bold text-breizh-navy mb-2">${
                                         contact.form.message
                                     }</label>
-                                    <textarea name="message" rows="4" required class="w-full px-4 py-3 rounded-lg border-gray-200 focus:border-breizh-blue focus:ring-breizh-blue bg-slate-50" placeholder="Bonjour, je souhaiterais réserver..."></textarea>
+                                    <textarea name="message" rows="4" required maxlength="5000" class="w-full px-4 py-3 rounded-lg border-gray-200 focus:border-breizh-blue focus:ring-breizh-blue bg-slate-50" placeholder="Bonjour, je souhaiterais réserver..."></textarea>
                                 </div>
 
                                 <div class="text-center pt-4">
