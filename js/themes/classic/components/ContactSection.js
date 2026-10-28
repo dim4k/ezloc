@@ -204,6 +204,10 @@ export class ContactSection extends BaseComponent {
                             </div>
 
                             <form id="booking-form" class="space-y-6 transition-all duration-300">
+                                <!-- Anti-spam: left empty by people, filled by most bots (checked by pb_hooks/on_message_guard.pb.js) -->
+                                <div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden">
+                                    <label>Site web <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+                                </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label class="block text-sm font-bold text-breizh-navy mb-2">${

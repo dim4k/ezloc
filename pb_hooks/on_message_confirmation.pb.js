@@ -3,6 +3,7 @@
 /**
  * Hook: Send a confirmation email to the guest after a booking request (via Resend).
  * Skipped when RESEND_API_KEY is missing or RESEND_CONFIRMATION is "false".
+ * At most one confirmation per address every 24 h, so the form cannot be used to flood a mailbox.
  */
 onRecordCreateRequest((e) => {
     e.next(); // the record is saved: confirm to the guest
@@ -11,8 +12,19 @@ onRecordCreateRequest((e) => {
     if (!apiKey || $os.getenv("RESEND_CONFIRMATION") === "false") return;
 
     const record = e.record;
+    if (record.isNew()) return; // not saved (stopped by another hook)
     const to = record.getString("email");
     if (!to) return;
+
+    const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString().replace("T", " ");
+    const earlier = $app.countRecords(
+        "messages",
+        $dbx.exp("LOWER([[email]]) = {:email} AND [[created]] > {:since} AND [[id]] != {:id}", { email: to.toLowerCase(), since: since, id: record.id }),
+    );
+    if (earlier > 0) {
+        console.log(`ℹ️ Confirmation already sent to ${to} in the last 24 h, skipped`);
+        return;
+    }
 
     const { buildConfirmationEmail } = require(`${__hooks}/lib/booking_emails.js`);
     // Singletons (site_identity, contact…): latest record, or null

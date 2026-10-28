@@ -63,6 +63,7 @@ export class PavContact extends BaseComponent {
             name: formData.get("name"),
             email: formData.get("email"),
             message: formData.get("message"),
+            website: formData.get("website") || "",
             arrival: booking.start ? fmtLongDate(booking.start) : "",
             departure: booking.end ? fmtLongDate(booking.end) : "",
             price_estimation: estimate ? fmtPrice(estimate.total) : "Non calculé",
@@ -199,6 +200,10 @@ export class PavContact extends BaseComponent {
 
                     <div class="pav-reveal">
                         <form data-form class="flex flex-col gap-5">
+                            <!-- Anti-spam: left empty by people, filled by most bots (checked by pb_hooks/on_message_guard.pb.js) -->
+                            <div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden">
+                                <label>Site web <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+                            </div>
                             <div class="flex flex-col gap-4 rounded-2xl bg-pav-navy-2 p-5">
                                 <button type="button" data-open-dates class="grid grid-cols-2 overflow-hidden rounded-[10px] bg-white text-left text-pav-navy" aria-label="Choisir les dates du séjour">
                                     <span class="border-r border-pav-sand px-3.5 py-3">

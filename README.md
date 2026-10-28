@@ -186,6 +186,22 @@ Here are the different sections you can modify via the administration interface:
 
 ---
 
+## 🛡️ Anti-abuse
+
+The booking form is public, so requests are filtered before they are saved or emailed (`pb_hooks/on_message_guard.pb.js`):
+
+*   **Honeypot**: a hidden `website` field that people never see; requests that fill it are rejected.
+*   **Per address**: at most 3 requests per email address in 24 h, and the guest confirmation is sent only once per address in 24 h.
+*   **Per IP**: PocketBase rate limiter, enabled by `pb_migrations/1793300000_rate_limits.js` (3 booking requests per 10 minutes, 30 calendar requests per minute, plus PocketBase's defaults). Adjust in *Dashboard > Settings > Application > Rate limiting*.
+
+Rejected visitors get an error message with the "send by email" fallback link, so a false positive never loses a request.
+
+| Variable | Role |
+|---|---|
+| `TRUSTED_PROXY_HEADERS` | **Required behind a reverse proxy** (nginx, Caddy, Traefik, Cloudflare…): header(s) carrying the visitor IP, e.g. `X-Forwarded-For` or `CF-Connecting-IP`. Without it, every visitor shares the proxy's IP and the per-IP limits apply to the whole site. Leave empty when PocketBase is exposed directly. |
+
+---
+
 ## 🎨 Themes
 
 The site ships with two themes rendering the same PocketBase data:

@@ -7,6 +7,7 @@ onRecordCreateRequest((e) => {
     e.next(); // the record is saved: notify the owner
 
     const record = e.record;
+    if (record.isNew()) return; // not saved (stopped by another hook)
 
     const apiKey = $os.getenv("RESEND_API_KEY");
     if (!apiKey) {
