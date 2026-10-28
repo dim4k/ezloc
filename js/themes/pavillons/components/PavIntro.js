@@ -12,7 +12,7 @@ export class PavIntro extends BaseComponent {
         const amenities = house_config?.amenities || [];
 
         this.innerHTML = `
-            <section class="bg-pav-chalk">
+            <section id="intro" class="bg-pav-chalk">
                 <div class="mx-auto max-w-[1360px] px-5 py-[72px] md:px-10 md:py-28">
                     <p class="pav-reveal max-w-[1040px] text-[19px] leading-[1.65] text-pav-ink md:font-display md:text-[34px] md:leading-[1.3] md:tracking-[-0.01em] md:text-pav-navy">
                         ${identity.description || ""}

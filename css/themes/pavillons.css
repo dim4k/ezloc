@@ -5,9 +5,17 @@
  * (set unless the visitor prefers reduced motion).
  */
 
+/* Anchors land right under the fixed header (h-16, md:h-20) */
 html[data-theme="pavillons"] {
     scroll-behavior: smooth;
-    scroll-padding-top: 72px;
+    scroll-padding-top: 64px;
+}
+/* Replaces the base 80px scroll-margin, which would add up with the padding above.
+   On mobile, skip part of the section's top padding so its title opens the screen. */
+html[data-theme="pavillons"] section[id] { scroll-margin-top: -40px; }
+@media (min-width: 768px) {
+    html[data-theme="pavillons"] { scroll-padding-top: 80px; }
+    html[data-theme="pavillons"] section[id] { scroll-margin-top: 0; }
 }
 
 /* --- Typography --- */
@@ -388,6 +396,11 @@ html.pav-motion .pav-lightbox[open] { animation: pav-backdrop 0.25s ease; }
 /* --- Mobile booking bar --- */
 .pav-bookbar { transition: transform 0.3s ease; }
 .pav-bookbar.is-hidden { transform: translateY(110%); }
+
+/* --- Map --- */
+/* Leaflet gives its panes and controls z-indexes up to 1000: keep them inside the map,
+   under the header, the menu and the booking bar */
+#pav-leaflet { isolation: isolate; }
 
 /* --- Map marker --- */
 .pav-marker { position: relative; }

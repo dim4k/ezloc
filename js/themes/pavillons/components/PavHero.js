@@ -183,7 +183,7 @@ export class PavHero extends BaseComponent {
                         ` : ""}
                         <button type="button" data-cta class="pav-btn min-h-12 flex-1 text-[15px]"></button>
                     </div>
-                    <a href="#maison" class="pav-in mx-auto mt-4 flex min-h-11 w-max flex-col items-center justify-center px-3 text-[11px] font-medium uppercase tracking-[0.12em] text-white/60" style="--d:1s">
+                    <a href="#intro" class="pav-in mx-auto mt-4 flex min-h-11 w-max flex-col items-center justify-center px-3 text-[11px] font-medium uppercase tracking-[0.12em] text-white/60" style="--d:1s">
                         ${hero.discover || "Découvrir la maison"}
                         <i data-lucide="chevron-down" class="pav-scroll-hint h-[18px] w-[18px]"></i>
                     </a>
