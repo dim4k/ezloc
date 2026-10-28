@@ -1,6 +1,11 @@
 import { initCMS, SITE_CONFIG } from "./cms.js";
 import { loadTheme } from "./theme.js";
 
+// Non-blocking stylesheets of index.html (media="print" until now)
+document.querySelectorAll("link[data-async-style]").forEach((link) => {
+    link.media = "all";
+});
+
 // Initialize App
 (async () => {
     // Try to fetch data from CMS

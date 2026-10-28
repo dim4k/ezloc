@@ -12,7 +12,7 @@ export class HouseSection extends BaseComponent {
             .map(
                 (feature, index) => `
             <div class="group relative bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden border border-slate-100"
-                 onclick="document.querySelector('detail-modal').open('${feature.id}')"
+                 data-feature-id="${feature.id}"
                  data-aos="fade-up" data-aos-delay="${index * 50}">
                 
                 <div class="relative h-64 overflow-hidden">
@@ -73,5 +73,10 @@ export class HouseSection extends BaseComponent {
                 </div>
             </section>
         `;
+
+        // Listeners rather than inline onclick attributes (blocked by the Content-Security-Policy)
+        this.querySelectorAll("[data-feature-id]").forEach((card) => {
+            card.addEventListener("click", () => document.querySelector("detail-modal").open(card.dataset.featureId));
+        });
     }
 }

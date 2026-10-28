@@ -219,6 +219,8 @@ SMTP uses Resend's relay with your `RESEND_API_KEY` by default (the `RESEND_FROM
 | `ADMIN_MFA` | `true` by default. Set to `false` and restart to turn two-factor login off, e.g. if the superuser mailbox is unreachable. |
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_USERNAME` / `SMTP_PASSWORD` / `SMTP_TLS` | Optional SMTP server instead of Resend (default port 465 with TLS). |
 
+**Security headers** (`pb_hooks/security_headers.pb.js`): the site is served with a Content-Security-Policy that only runs the site's own script files, plus `Referrer-Policy`, `Permissions-Policy` and HSTS over https. Inline `<script>` and `onclick="…"` attributes are therefore blocked: attach listeners in the components instead, and add any new external origin (fonts, images, API) to the policy.
+
 **Code not received?** Generate one from the server: `docker-compose exec app /pocketbase superuser otp admin@example.com --dir=/pb_data`. As a last resort, set `ADMIN_MFA=false`, restart, log in with the password, fix the email address or SMTP settings, then remove the variable. A forgotten password can be reset from the command line: `docker-compose exec app /pocketbase superuser update admin@example.com 'new-password' --dir=/pb_data`.
 
 ---

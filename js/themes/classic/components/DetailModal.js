@@ -93,7 +93,7 @@ export class DetailModal extends BaseComponent {
                                                      ? "border-breizh-blue shadow-md"
                                                      : "border-slate-200 opacity-60 hover:opacity-100"
                                              }"
-                                             onclick="document.querySelector('detail-modal').setImage(${idx})">
+                                             data-image-index="${idx}">
                                     `
                                         )
                                         .join("")}
@@ -103,7 +103,7 @@ export class DetailModal extends BaseComponent {
                                 : ""
                         }
                         
-                        <button onclick="this.closest('dialog').close()" class="inline-flex items-center gap-2 px-6 py-2 border border-slate-300 rounded-full hover:bg-slate-50 transition-colors text-sm font-medium">
+                        <button data-close class="inline-flex items-center gap-2 px-6 py-2 border border-slate-300 rounded-full hover:bg-slate-50 transition-colors text-sm font-medium">
                             <i data-lucide="x" class="w-4 h-4"></i> ${
                                 modal.close
                             }
@@ -123,6 +123,10 @@ export class DetailModal extends BaseComponent {
         if (nextBtn) {
             nextBtn.addEventListener("click", () => this.nextImage());
         }
+        contentDiv.querySelectorAll("[data-image-index]").forEach((img) => {
+            img.addEventListener("click", () => this.setImage(Number(img.dataset.imageIndex)));
+        });
+        contentDiv.querySelector("[data-close]").addEventListener("click", () => this.dialog.close());
 
         if (window.lucide) lucide.createIcons();
     }
@@ -153,10 +157,11 @@ export class DetailModal extends BaseComponent {
                 <div class="relative h-full w-full bg-white relative" id="modal-content">
                     <!-- JS Injected Content Here -->
                 </div>
-                <button onclick="this.closest('dialog').close()" class="absolute top-4 right-4 z-50 bg-white/90 hover:bg-white p-2 rounded-full transition-all shadow-lg">
+                <button data-close class="absolute top-4 right-4 z-50 bg-white/90 hover:bg-white p-2 rounded-full transition-all shadow-lg">
                     <i data-lucide="x" class="w-6 h-6 text-breizh-navy"></i>
                 </button>
             </dialog>
         `;
+        this.querySelector("dialog > [data-close]").addEventListener("click", (event) => event.currentTarget.closest("dialog").close());
     }
 }

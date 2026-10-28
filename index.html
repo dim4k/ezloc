@@ -63,11 +63,12 @@
         <!-- <link rel="stylesheet" href="css/style.css" /> is already included below -->
 
         <!-- Leaflet CSS & JS -->
+        <!-- Non-blocking: js/app.js switches media to "all" (no inline onload, see the Content-Security-Policy) -->
         <link
             rel="stylesheet"
             href="css/vendor/leaflet/leaflet.css"
             media="print"
-            onload="this.media='all'"
+            data-async-style
         />
         <noscript><link rel="stylesheet" href="css/vendor/leaflet/leaflet.css"></noscript>
         <script src="js/vendor/leaflet.js" defer></script>

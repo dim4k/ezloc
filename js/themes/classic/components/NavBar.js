@@ -12,7 +12,7 @@ export class NavBar extends BaseComponent {
             <nav class="fixed w-full z-50 transition-all duration-300 bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-100">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center h-20">
-                        <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                        <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" data-scroll-top>
                             <i data-lucide="sailboat" class="h-8 w-8 text-breizh-blue"></i>
                             <span class="font-serif text-xl font-bold text-breizh-navy tracking-wide hidden sm:block">${this.config.identity.name}</span>
                             <span class="font-serif text-xl font-bold text-breizh-navy tracking-wide sm:hidden">${this.config.identity.name}</span>
@@ -27,7 +27,7 @@ export class NavBar extends BaseComponent {
                         </div>
                         <!-- Mobile Menu Button -->
                         <div class="md:hidden">
-                            <button class="text-slate-600 p-2" onclick="document.querySelector('#mobile-menu').classList.toggle('hidden')" aria-label="Menu principal">
+                            <button class="text-slate-600 p-2" data-menu-toggle aria-label="Menu principal">
                                 <i data-lucide="menu"></i>
                             </button>
                         </div>
@@ -35,12 +35,20 @@ export class NavBar extends BaseComponent {
                 </div>
                 <!-- Mobile Menu -->
                 <div id="mobile-menu" class="hidden md:hidden bg-white border-t p-4 space-y-4 shadow-lg absolute w-full">
-                    <a href="#maison" class="block text-slate-700 py-2" onclick="this.closest('#mobile-menu').classList.add('hidden')">${nav.home}</a>
-                    <a href="#carte" class="block text-slate-700 py-2" onclick="this.closest('#mobile-menu').classList.add('hidden')">${nav.location}</a>
-                    <a href="#faq" class="block text-slate-700 py-2" onclick="this.closest('#mobile-menu').classList.add('hidden')">${nav.faq || 'FAQ'}</a>
-                    <a href="#contact" class="block text-breizh-blue font-bold py-2" onclick="this.closest('#mobile-menu').classList.add('hidden')">${nav.book}</a>
+                    <a href="#maison" class="block text-slate-700 py-2">${nav.home}</a>
+                    <a href="#carte" class="block text-slate-700 py-2">${nav.location}</a>
+                    <a href="#faq" class="block text-slate-700 py-2">${nav.faq || 'FAQ'}</a>
+                    <a href="#contact" class="block text-breizh-blue font-bold py-2">${nav.book}</a>
                 </div>
             </nav>
         `;
+
+        // Listeners rather than inline onclick attributes (blocked by the Content-Security-Policy)
+        const menu = this.querySelector("#mobile-menu");
+        this.querySelector("[data-scroll-top]").addEventListener("click", () => window.scrollTo(0, 0));
+        this.querySelector("[data-menu-toggle]").addEventListener("click", () => menu.classList.toggle("hidden"));
+        menu.addEventListener("click", (event) => {
+            if (event.target.closest("a")) menu.classList.add("hidden");
+        });
     }
 }
