@@ -27,6 +27,7 @@ services:
       - RESEND_CONFIRMATION=${RESEND_CONFIRMATION}
       - ICAL_ALLOWED_HOSTS=${ICAL_ALLOWED_HOSTS}
       - TRUSTED_PROXY_HEADERS=${TRUSTED_PROXY_HEADERS}
+      - ADMIN_MFA=${ADMIN_MFA:-true}
     volumes:
       - ./pb_data:/pb_data
       #- ./index.html:/pb_public/index.html (uncomment to override (SEO injection will be skipped))

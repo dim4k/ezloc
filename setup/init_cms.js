@@ -1,15 +1,68 @@
 const fs = require('fs');
 const path = require('path');
+const readline = require('readline');
 
 // Configuration
 const PB_URL = process.env.PB_URL || 'http://localhost:8090';
 const ADMIN_EMAIL = process.argv[2];
-const ADMIN_PASS = process.argv[3];
 
-if (!ADMIN_EMAIL || !ADMIN_PASS) {
-    console.error("❌ Usage: node setup/init_cms.js <admin_email> <admin_password>");
-    console.log("   Example: node setup/init_cms.js admin@example.com 1234567890");
+if (!ADMIN_EMAIL || process.argv[3]) {
+    console.error("❌ Usage: node setup/init_cms.js <admin_email>");
+    console.log("   The password is asked interactively (or read from PB_ADMIN_PASSWORD),");
+    console.log("   so that it does not end up in your shell history.");
     process.exit(1);
+}
+
+/**
+ * Asks a question on the terminal.
+ * @param {string} question
+ * @param {boolean} [hidden] - Do not echo the answer (passwords).
+ * @returns {Promise<string>}
+ */
+function ask(question, hidden = false) {
+    return new Promise((resolve) => {
+        const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: Boolean(process.stdin.isTTY) });
+        if (hidden) {
+            rl._writeToOutput = (text) => {
+                if (text.startsWith(question)) rl.output.write(text);
+            };
+        }
+        rl.question(question, (answer) => {
+            rl.close();
+            if (hidden) process.stdout.write("\n");
+            resolve(answer.trim());
+        });
+    });
+}
+
+/**
+ * Superuser login. When two-factor login is on (ADMIN_MFA), PocketBase answers the password
+ * step with an mfaId; the code sent by email then completes the login.
+ * @returns {Promise<string>} Auth token.
+ */
+async function authenticate(email) {
+    const password = process.env.PB_ADMIN_PASSWORD || await ask(`Password for ${email}: `, true);
+    const post = (route, body) => fetch(`${PB_URL}/api/collections/_superusers/${route}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    });
+
+    const res = await post('auth-with-password', { identity: email, password });
+    const data = await res.json();
+    if (res.ok) return data.token;
+    if (!data.mfaId) throw new Error(`Authentication failed (${res.status}): ${JSON.stringify(data)}`);
+
+    console.log("📧 Two-factor login: sending a code by email...");
+    const otpRes = await post('request-otp', { email });
+    const otp = await otpRes.json();
+    if (!otpRes.ok) throw new Error(`Code request failed (${otpRes.status}): ${JSON.stringify(otp)}`);
+
+    const code = await ask("Code received by email: ");
+    const finalRes = await post('auth-with-otp', { otpId: otp.otpId, password: code, mfaId: data.mfaId });
+    const finalData = await finalRes.json();
+    if (!finalRes.ok) throw new Error(`Authentication failed (${finalRes.status}): ${JSON.stringify(finalData)}`);
+    return finalData.token;
 }
 
 // Paths relative to this script (located in /setup)
@@ -38,13 +91,8 @@ async function main() {
 
         // 1. Authenticate
         console.log("🔑 Authenticating...");
-        const authData = await safeFetch(`${PB_URL}/api/collections/_superusers/auth-with-password`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ identity: ADMIN_EMAIL, password: ADMIN_PASS })
-        });
-        
-        const token = authData.token;
+        const token = await authenticate(ADMIN_EMAIL);
+        process.stdin.destroy(); // no more questions: an open stdin would keep the script running
         console.log("✅ Authenticated.");
 
         // 2. Schema Import handled by migrations
@@ -278,7 +326,8 @@ async function main() {
 
     } catch (error) {
         console.error("❌ Initialization failed:", error);
-        process.exit(1);
+        // exitCode rather than exit(): exiting right after closing readline crashes Node on Windows
+        process.exitCode = 1;
     }
 }
 

@@ -26,7 +26,7 @@ docker-compose up --build
 ### 2. Data Initialization (First Run)
 
 **0. Create the superuser (admin) account**
-On first start, PocketBase prints a one-time installer link in the logs (`docker-compose logs app`): open it to create the superuser. You can also create it from the command line:
+On first start, PocketBase prints a one-time installer link in the logs (`docker-compose logs app`): open it to create the superuser, with a long unique password. You can also create it from the command line (the password then stays in your shell history):
 
 ```bash
 docker-compose exec app /pocketbase superuser upsert admin@example.com 'a-long-unique-password' --dir=/pb_data
@@ -45,12 +45,12 @@ Once the container is running and the config is ready, run the initialization sc
 **Note:** If you are re-installing, it is recommended to stop Docker and delete the `pb_data` directory to ensure a clean schema application.
 
 ```bash
-# Replace with your desired admin email and password
-node setup/init_cms.js admin@example.com 1234567890
+# Asks for the superuser password (and the code sent by email when two-factor login is on)
+node setup/init_cms.js admin@example.com
 ```
 
 This script will:
-1.  Authenticate with PocketBase.
+1.  Authenticate with PocketBase (password asked interactively, or read from `PB_ADMIN_PASSWORD`).
 2.  Populate the database with data from `config.json`.
 3.  Upload images from `setup/img/`.
 
@@ -199,6 +199,25 @@ Rejected visitors get an error message with the "send by email" fallback link, s
 | Variable | Role |
 |---|---|
 | `TRUSTED_PROXY_HEADERS` | **Required behind a reverse proxy** (nginx, Caddy, Traefik, Cloudflare…): header(s) carrying the visitor IP, e.g. `X-Forwarded-For` or `CF-Connecting-IP`. Without it, every visitor shares the proxy's IP and the per-IP limits apply to the whole site. Leave empty when PocketBase is exposed directly. |
+
+---
+
+## 🔐 Admin access
+
+The dashboard (`/_/`) stays reachable from anywhere, protected by:
+
+*   **Two-factor login**: superusers enter their password, then a code sent to their email address. Turned on at startup by `pb_hooks/settings.pb.js` as soon as an SMTP server is configured (otherwise the code could not be delivered).
+*   **Login rate limits** (`pb_migrations/1793400000_auth_rate_limits.js`): 5 login attempts per minute and 3 code requests per 5 minutes, per IP.
+*   **New-login alerts**: PocketBase emails the superuser when their account logs in from a new location.
+
+SMTP uses Resend's relay with your `RESEND_API_KEY` by default (the `RESEND_FROM_EMAIL` domain must be verified in Resend). Another server can be set with the `SMTP_*` variables.
+
+| Variable | Role |
+|---|---|
+| `ADMIN_MFA` | `true` by default. Set to `false` and restart to turn two-factor login off, e.g. if the superuser mailbox is unreachable. |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USERNAME` / `SMTP_PASSWORD` / `SMTP_TLS` | Optional SMTP server instead of Resend (default port 465 with TLS). |
+
+**Code not received?** Generate one from the server: `docker-compose exec app /pocketbase superuser otp admin@example.com --dir=/pb_data`. As a last resort, set `ADMIN_MFA=false`, restart, log in with the password, fix the email address or SMTP settings, then remove the variable. A forgotten password can be reset from the command line: `docker-compose exec app /pocketbase superuser update admin@example.com 'new-password' --dir=/pb_data`.
 
 ---
 
