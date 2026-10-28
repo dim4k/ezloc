@@ -5,16 +5,19 @@
  * Additive only: new collections and optional fields. Empty values keep the previous behavior.
  */
 
-migrate((db) => {
-    const dao = new Dao(db);
-
+migrate((app) => {
     // Small previews only: the uploaded photos are already web-sized, and larger
     // thumbnails re-encoded by PocketBase turned out heavier than the originals.
     const THUMBS = ["160x120"];
 
+    const DATES = [
+        { name: "created", type: "autodate", onCreate: true, onUpdate: false },
+        { name: "updated", type: "autodate", onCreate: true, onUpdate: true },
+    ];
+
     function findCollection(name) {
         try {
-            return dao.findCollectionByNameOrId(name);
+            return app.findCollectionByNameOrId(name);
         } catch (e) {
             return null;
         }
@@ -22,98 +25,74 @@ migrate((db) => {
 
     function createCollection(config) {
         if (findCollection(config.name)) return;
-        dao.saveCollection(new Collection(config));
+        app.save(new Collection(Object.assign({ type: "base" }, config, { fields: config.fields.concat(DATES) })));
     }
 
     function addField(collectionName, field) {
         const collection = findCollection(collectionName);
-        if (!collection || collection.schema.getFieldByName(field.name)) return;
-        collection.schema.addField(new SchemaField(field));
-        dao.saveCollection(collection);
+        if (!collection || collection.fields.getByName(field.name)) return;
+        collection.fields.add(new Field(field));
+        app.save(collection);
     }
 
-    // Declares thumbnail sizes on an existing file field (same id: the field is replaced, not duplicated)
+    // Declares thumbnail sizes on an existing file field
     function addThumbs(collectionName, fieldName) {
         const collection = findCollection(collectionName);
         if (!collection) return;
-        const field = collection.schema.getFieldByName(fieldName);
-        if (!field || field.type !== "file") return;
+        const field = collection.fields.getByName(fieldName);
+        if (!field || field.type() !== "file") return;
 
-        const options = field.options;
         const thumbs = [];
-        const mimeTypes = [];
-        for (let i = 0; i < (options.thumbs ? options.thumbs.length : 0); i++) thumbs.push(options.thumbs[i]);
-        for (let i = 0; i < (options.mimeTypes ? options.mimeTypes.length : 0); i++) mimeTypes.push(options.mimeTypes[i]);
+        for (let i = 0; i < (field.thumbs ? field.thumbs.length : 0); i++) thumbs.push(field.thumbs[i]);
         THUMBS.forEach((size) => {
             if (thumbs.indexOf(size) === -1) thumbs.push(size);
         });
-
-        collection.schema.addField(new SchemaField({
-            id: field.id,
-            name: field.name,
-            type: "file",
-            system: field.system,
-            required: field.required,
-            presentable: field.presentable,
-            options: {
-                maxSelect: options.maxSelect,
-                maxSize: options.maxSize,
-                mimeTypes: mimeTypes,
-                protected: options.protected,
-                thumbs: thumbs,
-            },
-        }));
-        dao.saveCollection(collection);
+        field.thumbs = thumbs;
+        app.save(collection);
     }
 
     // 1. Stay rules (e.g. "fortnight only from 12/07 to 23/08")
     createCollection({
         name: "stay_rules",
-        type: "base",
-        system: false,
         listRule: "",
         viewRule: "",
-        schema: [
-            { name: "label", type: "text", required: false },
+        fields: [
+            { name: "label", type: "text" },
             { name: "start", type: "text", required: true },
             { name: "end", type: "text", required: true },
-            { name: "min_nights", type: "number", required: false, options: { min: 1, max: null, noDecimal: true } },
-            { name: "nights_multiple", type: "number", required: false, options: { min: 1, max: null, noDecimal: true } },
+            { name: "min_nights", type: "number", min: 1, onlyInt: true },
+            { name: "nights_multiple", type: "number", min: 1, onlyInt: true },
         ],
     });
 
     // 2. Paid options offered in the booking form (e.g. linen)
     createCollection({
         name: "booking_options",
-        type: "base",
-        system: false,
         listRule: "",
         viewRule: "",
-        schema: [
+        fields: [
             { name: "name", type: "text", required: true },
-            { name: "description", type: "text", required: false },
-            { name: "price", type: "number", required: true, options: { min: 0, max: null, noDecimal: false } },
-            { name: "unit", type: "select", required: true, options: { maxSelect: 1, values: ["stay", "night", "guest", "guest_night"] } },
-            { name: "order", type: "number", required: false, options: { min: null, max: null, noDecimal: true } },
+            { name: "description", type: "text" },
+            { name: "price", type: "number", required: true, min: 0 },
+            { name: "unit", type: "select", required: true, maxSelect: 1, values: ["stay", "night", "guest", "guest_night"] },
+            { name: "order", type: "number", onlyInt: true },
         ],
     });
 
     // 3. Optional fields on existing collections
-    addField("house_config", { name: "max_guests", type: "number", required: false, options: { min: 1, max: null, noDecimal: true } });
-    addField("messages", { name: "guests", type: "number", required: false, options: { min: 1, max: null, noDecimal: true } });
-    addField("messages", { name: "options", type: "json", required: false, options: { maxSize: 2000000 } });
+    addField("house_config", { name: "max_guests", type: "number", min: 1, onlyInt: true });
+    addField("messages", { name: "guests", type: "number", min: 1, onlyInt: true });
+    addField("messages", { name: "options", type: "json", maxSize: 2000000 });
 
     // 4. Thumbnails for every image field (?thumb=WxH)
     addThumbs("welcome", "image");
     addThumbs("house_features", "thumbnail");
     addThumbs("house_features", "gallery");
     addThumbs("activities", "images");
-}, (db) => {
-    const dao = new Dao(db);
-
+}, (app) => {
     ["stay_rules", "booking_options"].forEach((name) => {
         try {
-            dao.deleteCollection(dao.findCollectionByNameOrId(name));
+            app.delete(app.findCollectionByNameOrId(name));
         } catch (e) {
             // already removed
         }
@@ -121,11 +100,10 @@ migrate((db) => {
 
     [["house_config", "max_guests"], ["messages", "guests"], ["messages", "options"]].forEach(([collectionName, fieldName]) => {
         try {
-            const collection = dao.findCollectionByNameOrId(collectionName);
-            const field = collection.schema.getFieldByName(fieldName);
-            if (field) {
-                collection.schema.removeField(field.id);
-                dao.saveCollection(collection);
+            const collection = app.findCollectionByNameOrId(collectionName);
+            if (collection.fields.getByName(fieldName)) {
+                collection.fields.removeByName(fieldName);
+                app.save(collection);
             }
         } catch (e) {
             // already removed

@@ -5,28 +5,23 @@
  * Additive only: older front-ends simply never send it.
  */
 
-migrate((db) => {
-    const dao = new Dao(db);
-
+migrate((app) => {
     let collection;
     try {
-        collection = dao.findCollectionByNameOrId("messages");
+        collection = app.findCollectionByNameOrId("messages");
     } catch (e) {
         return;
     }
-    if (collection.schema.getFieldByName("phone")) return;
+    if (collection.fields.getByName("phone")) return;
 
-    collection.schema.addField(new SchemaField({ name: "phone", type: "text", required: false, options: { min: null, max: 40, pattern: "" } }));
-    dao.saveCollection(collection);
-}, (db) => {
-    const dao = new Dao(db);
-
+    collection.fields.add(new TextField({ name: "phone", required: false, max: 40 }));
+    app.save(collection);
+}, (app) => {
     try {
-        const collection = dao.findCollectionByNameOrId("messages");
-        const field = collection.schema.getFieldByName("phone");
-        if (field) {
-            collection.schema.removeField(field.id);
-            dao.saveCollection(collection);
+        const collection = app.findCollectionByNameOrId("messages");
+        if (collection.fields.getByName("phone")) {
+            collection.fields.removeByName("phone");
+            app.save(collection);
         }
     } catch (e) {
         // already removed

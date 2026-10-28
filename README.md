@@ -25,6 +25,13 @@ docker-compose up --build
 
 ### 2. Data Initialization (First Run)
 
+**0. Create the superuser (admin) account**
+On first start, PocketBase prints a one-time installer link in the logs (`docker-compose logs app`): open it to create the superuser. You can also create it from the command line:
+
+```bash
+docker-compose exec app /pocketbase superuser upsert admin@example.com 'a-long-unique-password' --dir=/pb_data
+```
+
 **1. Prepare Configuration**
 The `setup/config.json` file is ignored by Git. Copy the template to create your own configuration:
 
@@ -236,3 +243,13 @@ To work on the site locally with hot-reloading:
 To deploy to production:
 1.  Build the image and start the container.
 2.  The entrypoint script will generate the final `index.html` with the correct SEO.
+
+### ⬆️ Upgrading from PocketBase 0.22
+
+The image now ships PocketBase 0.40. On first start, PocketBase converts an existing 0.22 `pb_data` automatically (admins become `_superusers` records, same email and password). The migrations in `pb_migrations/` keep their file names, so they are not replayed on an existing database.
+
+1.  **Back up `pb_data`** (stop the container and copy the directory). The conversion cannot be undone.
+2.  Pull or build the new image and start it.
+3.  Check the site and log into `/_/` with your existing admin account.
+
+To roll back, restore the `pb_data` backup and run the previous image.

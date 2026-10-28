@@ -38,7 +38,7 @@ async function main() {
 
         // 1. Authenticate
         console.log("🔑 Authenticating...");
-        const authData = await safeFetch(`${PB_URL}/api/admins/auth-with-password`, {
+        const authData = await safeFetch(`${PB_URL}/api/collections/_superusers/auth-with-password`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ identity: ADMIN_EMAIL, password: ADMIN_PASS })

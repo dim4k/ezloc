@@ -1,10 +1,11 @@
+/// <reference path="../pb_data/types.d.ts" />
 
 // Custom endpoint to fetch iCal data server-side (bypassing CORS)
-routerAdd("GET", "/api/ical-proxy", (c) => {
-    const url = c.queryParam("url");
-    
+routerAdd("GET", "/api/ical-proxy", (e) => {
+    const url = e.request.url.query().get("url");
+
     if (!url) {
-        return c.json(400, { error: "Missing url parameter" });
+        return e.json(400, { error: "Missing url parameter" });
     }
 
     try {
@@ -15,13 +16,13 @@ routerAdd("GET", "/api/ical-proxy", (c) => {
         });
 
         if (res.statusCode >= 400) {
-            return c.json(res.statusCode, { error: "Remote server returned error" });
+            return e.json(res.statusCode, { error: "Remote server returned error" });
         }
 
         // Return the raw text content (iCal data)
-        return c.string(200, res.raw);
+        return e.string(200, toString(res.body));
 
     } catch (err) {
-        return c.json(500, { error: "Failed to fetch iCal", details: err.toString() });
+        return e.json(500, { error: "Failed to fetch iCal", details: err.toString() });
     }
 });

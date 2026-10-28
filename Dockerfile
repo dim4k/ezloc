@@ -44,7 +44,7 @@ RUN cp node_modules/lucide/dist/umd/lucide.min.js js/vendor/lucide.js
 FROM alpine:latest
 
 # PocketBase Version
-ARG PB_VERSION=0.22.21
+ARG PB_VERSION=0.40.6
 
 # SEO Build Arguments
 ARG SEO_TITLE="Maison de Vacances"

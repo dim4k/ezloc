@@ -4,7 +4,9 @@
  * Hook: Send a confirmation email to the guest after a booking request (via Resend).
  * Skipped when RESEND_API_KEY is missing or RESEND_CONFIRMATION is "false".
  */
-onRecordAfterCreateRequest((e) => {
+onRecordCreateRequest((e) => {
+    e.next(); // the record is saved: confirm to the guest
+
     const apiKey = $os.getenv("RESEND_API_KEY");
     if (!apiKey || $os.getenv("RESEND_CONFIRMATION") === "false") return;
 
@@ -13,12 +15,10 @@ onRecordAfterCreateRequest((e) => {
     if (!to) return;
 
     const { buildConfirmationEmail } = require(`${__hooks}/lib/booking_emails.js`);
-    const dao = $app.dao();
-
     // Singletons (site_identity, contact…): latest record, or null
     const latest = (collection) => {
         try {
-            return dao.findRecordsByFilter(collection, "id != ''", "-created", 1, 0)[0] || null;
+            return $app.findRecordsByFilter(collection, "id != ''", "-created", 1, 0)[0] || null;
         } catch (err) {
             return null;
         }
@@ -40,14 +40,14 @@ onRecordAfterCreateRequest((e) => {
     // Only keep options that really exist (the request payload comes from the browser)
     let knownOptions = [];
     try {
-        knownOptions = dao.findRecordsByFilter("booking_options", "id != ''", "order", 100, 0).map((o) => o.getString("name"));
+        knownOptions = $app.findRecordsByFilter("booking_options", "id != ''", "order", 100, 0).map((o) => o.getString("name"));
     } catch (err) {
         // collection not created yet
     }
     const options = parseJson(record.getString("options"), [])
         .filter((option) => option && knownOptions.indexOf(option.name) !== -1);
 
-    const appUrl = ($app.settings().meta.appUrl || "").replace(/\/$/, "");
+    const appUrl = ($app.settings().meta.appURL || "").replace(/\/$/, "");
     const image = welcome ? welcome.getString("image") : "";
     const lat = location ? location.getFloat("lat") : 0;
     const lng = location ? location.getFloat("lng") : 0;
@@ -89,7 +89,7 @@ onRecordAfterCreateRequest((e) => {
         if (res.statusCode === 200 || res.statusCode === 201) {
             console.log(`✅ Confirmation email sent to ${to}`);
         } else {
-            console.error(`❌ Resend API error ${res.statusCode}:`, res.raw);
+            console.error(`❌ Resend API error ${res.statusCode}:`, toString(res.body));
         }
     } catch (err) {
         console.error("❌ Failed to send confirmation email via Resend:", err);

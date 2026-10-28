@@ -6,34 +6,31 @@
  * Additive only: without slides, the mobile hero falls back to welcome.image.
  */
 
-migrate((db) => {
-    const dao = new Dao(db);
-
+migrate((app) => {
     try {
-        dao.findCollectionByNameOrId("hero_slides");
+        app.findCollectionByNameOrId("hero_slides");
         return;
     } catch (e) {
         // not created yet
     }
 
-    dao.saveCollection(new Collection({
-        name: "hero_slides",
+    app.save(new Collection({
         type: "base",
-        system: false,
+        name: "hero_slides",
         listRule: "",
         viewRule: "",
-        schema: [
+        fields: [
             // Shown full screen on phones: upload large photos (2000 px wide or more)
-            { name: "image", type: "file", required: true, options: { maxSelect: 1, maxSize: 15728640, mimeTypes: ["image/jpeg", "image/png", "image/webp"], thumbs: [] } },
-            { name: "caption", type: "text", required: false },
-            { name: "order", type: "number", required: false, options: { min: null, max: null, noDecimal: true } },
+            { name: "image", type: "file", required: true, maxSelect: 1, maxSize: 15728640, mimeTypes: ["image/jpeg", "image/png", "image/webp"], thumbs: [] },
+            { name: "caption", type: "text" },
+            { name: "order", type: "number", onlyInt: true },
+            { name: "created", type: "autodate", onCreate: true, onUpdate: false },
+            { name: "updated", type: "autodate", onCreate: true, onUpdate: true },
         ],
     }));
-}, (db) => {
-    const dao = new Dao(db);
-
+}, (app) => {
     try {
-        dao.deleteCollection(dao.findCollectionByNameOrId("hero_slides"));
+        app.delete(app.findCollectionByNameOrId("hero_slides"));
     } catch (e) {
         // already removed
     }

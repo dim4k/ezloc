@@ -3,7 +3,9 @@
 /**
  * Hook: Send email notification via Resend API when a new contact message is created.
  */
-onRecordAfterCreateRequest((e) => {
+onRecordCreateRequest((e) => {
+    e.next(); // the record is saved: notify the owner
+
     const record = e.record;
 
     const apiKey = $os.getenv("RESEND_API_KEY");
@@ -117,7 +119,7 @@ onRecordAfterCreateRequest((e) => {
         if (res.statusCode === 200 || res.statusCode === 201) {
             console.log(`✅ Email notification sent for message from ${name} (${email})`);
         } else {
-            console.error(`❌ Resend API error ${res.statusCode}:`, res.raw);
+            console.error(`❌ Resend API error ${res.statusCode}:`, toString(res.body));
         }
     } catch (err) {
         console.error("❌ Failed to send email via Resend:", err);
