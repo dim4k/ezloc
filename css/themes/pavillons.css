@@ -125,8 +125,14 @@ html[data-theme="pavillons"] :focus-visible {
     transition: opacity 0.6s ease;
 }
 .pav-story.is-active { opacity: 1; }
+/* Dark top for the header and the caption, dark bottom for the text block */
 .pav-story-scrim {
-    background: linear-gradient(180deg, rgba(12, 24, 35, 0.6) 0%, rgba(12, 24, 35, 0) 22%, rgba(12, 24, 35, 0) 45%, rgba(12, 24, 35, 0.92) 100%);
+    background: linear-gradient(180deg, rgba(12, 24, 35, 0.6) 0%, rgba(12, 24, 35, 0) 20%, rgba(12, 24, 35, 0) 30%, rgba(12, 24, 35, 0.94) 66%);
+}
+/* Short phones (e.g. iPhone SE): keep some photo visible above the text block */
+@media (max-width: 767px) and (max-height: 700px) {
+    #top .pav-hero-facts { display: none; }
+    #top .pav-hero-title { font-size: 34px; }
 }
 .pav-story-bar {
     flex: 1;
@@ -183,6 +189,18 @@ html[data-theme="pavillons"] :focus-visible {
     color: #FFFFFF;
 }
 .pav-tab[aria-selected="false"]:hover { background: #ECE8DF; }
+
+/* Mobile tab list: fade the edges where more tabs are hidden (classes set by PavHouse) */
+@media (max-width: 767px) {
+    .pav-tablist { --fade-l: #000; --fade-r: #000; }
+    .pav-tablist.can-scroll-left { --fade-l: transparent; }
+    .pav-tablist.can-scroll-right { --fade-r: transparent; }
+    .pav-tablist.can-scroll-left,
+    .pav-tablist.can-scroll-right {
+        -webkit-mask-image: linear-gradient(90deg, var(--fade-l), #000 48px, #000 calc(100% - 48px), var(--fade-r));
+        mask-image: linear-gradient(90deg, var(--fade-l), #000 48px, #000 calc(100% - 48px), var(--fade-r));
+    }
+}
 
 .pav-dot {
     width: 6px;

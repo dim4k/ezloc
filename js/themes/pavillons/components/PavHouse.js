@@ -19,7 +19,7 @@ export class PavHouse extends BaseComponent {
                     </div>
                     <div class="md:grid md:grid-cols-[280px_minmax(0,1fr)] md:items-start md:gap-10">
                         <div role="tablist" aria-label="${houseConfig.title || ""}" data-tablist
-                             class="pav-noscrollbar flex snap-x gap-2 overflow-x-auto scroll-px-5 px-5 pb-6 md:flex-col md:gap-1 md:overflow-visible md:px-0 md:pb-0">
+                             class="pav-tablist pav-noscrollbar flex snap-x gap-2 overflow-x-auto scroll-px-5 px-5 pb-6 md:flex-col md:gap-1 md:overflow-visible md:px-0 md:pb-0">
                             ${features.map((feature, i) => `
                                 <button type="button" role="tab" id="pav-tab-${i}" aria-controls="pav-room" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-index="${i}"
                                         class="pav-tab flex min-h-11 shrink-0 snap-start items-center gap-3 whitespace-nowrap rounded-full border border-[#D6D0C4] bg-white px-[18px] text-sm font-medium md:min-h-12 md:w-full md:whitespace-normal md:rounded md:border-transparent md:bg-transparent md:px-4 md:text-left md:text-base">
@@ -40,6 +40,27 @@ export class PavHouse extends BaseComponent {
             tab.addEventListener("keydown", (e) => this.onTabKeydown(e));
         });
         this.showRoom(0, { initial: true });
+
+        // Fade the edges of the horizontal (mobile) tab list where more tabs are hidden
+        const tablist = this.querySelector("[data-tablist]");
+        const updateFade = () => {
+            const max = tablist.scrollWidth - tablist.clientWidth;
+            tablist.classList.toggle("can-scroll-left", tablist.scrollLeft > 4);
+            tablist.classList.toggle("can-scroll-right", tablist.scrollLeft < max - 4);
+        };
+        let frame;
+        const scheduleFade = () => {
+            cancelAnimationFrame(frame);
+            frame = requestAnimationFrame(updateFade);
+        };
+        tablist.addEventListener("scroll", scheduleFade, { passive: true });
+        this.onResize = scheduleFade;
+        window.addEventListener("resize", this.onResize, { passive: true });
+        updateFade();
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener("resize", this.onResize);
     }
 
     onTabKeydown(e) {

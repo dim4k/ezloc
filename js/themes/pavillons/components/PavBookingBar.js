@@ -1,5 +1,5 @@
 import { BaseComponent } from "../../../shared/BaseComponent.js";
-import { booking, openDates } from "../store.js";
+import { booking, goToBookingForm, openDates } from "../store.js";
 import { fmtPrice, fmtShortDate, minNightlyPrice } from "../helpers.js";
 
 /** Mobile-only bar pinned to the bottom of the screen. */
@@ -38,7 +38,8 @@ export class PavBookingBar extends BaseComponent {
             text.innerHTML = `
                 <span class="block truncate">${fmtShortDate(booking.start)} → ${fmtShortDate(booking.end)}</span>
                 <strong class="text-lg font-semibold text-pav-navy">${fmtPrice(estimate.total)}</strong>`;
-            action.textContent = this.config.labels?.contact?.form?.submit || "Envoyer la demande";
+            // The button only brings the visitor to the form: it must not sound like it sends anything
+            action.textContent = this.config.labels?.hero?.request || "Finaliser ma demande";
         } else {
             const min = minNightlyPrice(this.config.pricing);
             text.innerHTML = min != null ? `dès <strong class="text-lg font-semibold text-pav-navy">${fmtPrice(min)}</strong> / nuit` : "";
@@ -61,12 +62,8 @@ export class PavBookingBar extends BaseComponent {
         this.bar = this.querySelector(".pav-bookbar");
 
         this.querySelector("[data-action]").addEventListener("click", () => {
-            if (!booking.hasRange) {
-                openDates();
-                return;
-            }
-            document.getElementById("reserver")?.scrollIntoView({ behavior: "smooth" });
-            setTimeout(() => document.querySelector('#reserver input[name="name"]')?.focus({ preventScroll: true }), 600);
+            if (booking.hasRange) goToBookingForm();
+            else openDates();
         });
         this.update();
     }

@@ -1,9 +1,12 @@
 import { BaseComponent } from "../../../shared/BaseComponent.js";
 import { previewUrl } from "../helpers.js";
 
+const photosOf = (feature) => (feature.gallery?.length ? feature.gallery : [feature.thumbnail].filter(Boolean));
+
 /**
  * Full-screen photo viewer for a house feature (room):
  * native swipe (scroll-snap), arrows, keyboard and thumbnails.
+ * After the last photo, a card leads to the next room so the whole house can be visited without closing.
  */
 export class PavLightbox extends BaseComponent {
     /**
@@ -11,10 +14,18 @@ export class PavLightbox extends BaseComponent {
      * @param {number} photoIndex - Photo to show first.
      */
     open(featureIndex, photoIndex = 0) {
-        const feature = this.config.house_features?.[featureIndex];
+        const features = this.config.house_features || [];
+        const feature = features[featureIndex];
         if (!feature) return;
-        const photos = feature.gallery?.length ? feature.gallery : [feature.thumbnail].filter(Boolean);
+        const photos = photosOf(feature);
+        this.featureIndex = featureIndex;
         this.count = photos.length;
+
+        // Last room loops back to the first one
+        const nextIndex = features.length > 1 ? (featureIndex + 1) % features.length : null;
+        const nextFeature = nextIndex != null ? features[nextIndex] : null;
+        const nextCover = nextFeature && (nextFeature.thumbnail || photosOf(nextFeature)[0]);
+        this.slides = this.count + (nextFeature ? 1 : 0);
 
         this.titleEl.textContent = feature.title;
         this.description.innerHTML = feature.shortDesc || "";
@@ -24,38 +35,56 @@ export class PavLightbox extends BaseComponent {
                 <img src="${src}" alt="${feature.title} — photo ${k + 1} sur ${photos.length}" ${k === photoIndex ? "" : 'loading="lazy"'}
                      class="max-h-full max-w-full rounded-md object-contain">
             </figure>
-        `).join("");
+        `).join("") + (nextFeature ? `
+            <div class="flex h-full w-full shrink-0 snap-center items-center justify-center px-6 md:px-20">
+                <button type="button" data-next-room class="flex w-full max-w-sm flex-col overflow-hidden rounded-2xl bg-white/10 text-left transition-colors hover:bg-white/15">
+                    ${nextCover ? `<img src="${nextCover}" alt="" loading="lazy" class="aspect-[4/3] w-full object-cover">` : ""}
+                    <span class="flex items-center justify-between gap-4 p-5">
+                        <span class="min-w-0">
+                            <span class="block text-xs font-semibold uppercase tracking-[0.14em] text-pav-yellow">${nextIndex === 0 ? "Revenir au début" : "Pièce suivante"}</span>
+                            <span class="mt-1 block font-display text-2xl leading-tight">${nextFeature.title}</span>
+                        </span>
+                        <span class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-pav-yellow text-pav-navy"><i data-lucide="arrow-right" class="h-5 w-5"></i></span>
+                    </span>
+                </button>
+            </div>
+        ` : "");
         this.thumbs.innerHTML = photos.length > 1 ? photos.map((src, k) => `
             <button type="button" data-thumb="${k}" class="pav-thumb h-12 w-16 shrink-0 overflow-hidden rounded" aria-label="Voir la photo ${k + 1}">
                 <img src="${previewUrl(src)}" alt="" class="h-full w-full object-cover">
             </button>
         `).join("") : "";
         this.thumbs.hidden = photos.length < 2;
-        this.prev.hidden = this.next.hidden = photos.length < 2;
+        this.prev.hidden = this.next.hidden = this.slides < 2;
         this.thumbs.querySelectorAll("[data-thumb]").forEach((button) => {
             button.addEventListener("click", () => this.goTo(Number(button.dataset.thumb)));
         });
+        this.track.querySelector("[data-next-room]")?.addEventListener("click", () => this.open(nextIndex, 0));
+        if (window.lucide) lucide.createIcons();
 
-        this.dialog.showModal();
+        if (!this.dialog.open) {
+            this.openedOn = featureIndex;
+            this.dialog.showModal();
+        }
         document.documentElement.style.overflow = "hidden";
         this.goTo(photoIndex, "instant");
         this.sync();
     }
 
     goTo(index, behavior = "smooth") {
-        const clamped = Math.max(0, Math.min(this.count - 1, index));
+        const clamped = Math.max(0, Math.min(this.slides - 1, index));
         this.track.scrollTo({ left: clamped * this.track.clientWidth, behavior });
     }
 
     sync() {
         this.current = Math.round(this.track.scrollLeft / (this.track.clientWidth || 1));
-        this.counter.textContent = `${this.current + 1} / ${this.count}`;
+        this.counter.textContent = this.current < this.count ? `${this.current + 1} / ${this.count}` : "";
         this.thumbs.querySelectorAll("[data-thumb]").forEach((thumb, k) => {
             thumb.classList.toggle("is-active", k === this.current);
             if (k === this.current) thumb.scrollIntoView({ inline: "nearest", block: "nearest" });
         });
         this.prev.disabled = this.current === 0;
-        this.next.disabled = this.current === this.count - 1;
+        this.next.disabled = this.current === this.slides - 1;
     }
 
     render() {
@@ -111,6 +140,8 @@ export class PavLightbox extends BaseComponent {
         });
         this.dialog.addEventListener("close", () => {
             document.documentElement.style.overflow = "";
+            // Leave the house section on the room the visitor ended on
+            if (this.featureIndex !== this.openedOn) document.querySelector("pav-house")?.showRoom(this.featureIndex);
         });
     }
 }

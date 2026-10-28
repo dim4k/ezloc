@@ -14,7 +14,9 @@
             },
             "hero": {
                 "discover": "Visiter la villa",
-                "availability": "Voir les disponibilités"
+                "availability": "Voir les disponibilités",
+                "request": "Demander ces dates",
+                "facts": ["8 personnes", "4 chambres", "Plage à 5 min"]
             },
             "features": {
                 "viewPhotos": "Voir la galerie",
@@ -37,9 +39,11 @@
             "contact": {
                 "title": "Nous contacter",
                 "subtitle": "Une question ? Envie de réserver ?",
+                "responseTime": "sous 24 h",
                 "form": {
                     "name": "Votre nom",
                     "email": "Votre email",
+                    "phone": "Téléphone",
                     "arrival": "Arrivée",
                     "departure": "Départ",
                     "message": "Votre message",

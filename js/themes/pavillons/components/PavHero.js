@@ -1,5 +1,5 @@
 import { BaseComponent } from "../../../shared/BaseComponent.js";
-import { booking, openDates } from "../store.js";
+import { booking, goToBookingForm, openDates } from "../store.js";
 import { FLAGS, fmtPrice, fmtShortDate, minNightlyPrice } from "../helpers.js";
 
 // Time spent on each photo of the mobile stories
@@ -8,7 +8,7 @@ const STORY_DURATION_MS = 6000;
 export class PavHero extends BaseComponent {
     connectedCallback() {
         super.connectedCallback();
-        this.unsubscribe = booking.subscribe(() => this.updateDates());
+        this.unsubscribe = booking.subscribe(() => this.updateBooking());
     }
 
     disconnectedCallback() {
@@ -18,20 +18,41 @@ export class PavHero extends BaseComponent {
         document.removeEventListener("visibilitychange", this.onVisibilityChange);
     }
 
-    updateDates() {
+    /** Once dates are picked, the price becomes the stay total and the main button leads to the form. */
+    updateBooking() {
         const arrival = this.querySelector("[data-arrival]");
         const departure = this.querySelector("[data-departure]");
         if (arrival) arrival.textContent = booking.start ? fmtShortDate(booking.start) : "Ajouter une date";
         if (departure) departure.textContent = booking.end ? fmtShortDate(booking.end) : "Ajouter une date";
+
+        const hero = this.config.labels?.hero || {};
+        const estimate = booking.estimate();
+        const minPrice = minNightlyPrice(this.config.pricing);
+        this.querySelectorAll("[data-cta]").forEach((button) => {
+            button.textContent = estimate ? hero.request || "Demander ces dates" : hero.availability || "Disponibilités";
+        });
+        // Mobile card and desktop bar both show the price
+        this.querySelectorAll("[data-price-label]").forEach((label) => {
+            label.textContent = estimate ? `Total · ${estimate.nights} nuit${estimate.nights > 1 ? "s" : ""}` : "À partir de";
+        });
+        this.querySelectorAll("[data-price]").forEach((price) => {
+            if (estimate) price.textContent = fmtPrice(estimate.total);
+            else if (minPrice != null) price.innerHTML = `${fmtPrice(minPrice)}<span class="text-[13px] font-normal text-pav-muted"> / nuit</span>`;
+        });
     }
 
-    /** Mobile stories: the photos of the first house feature ("La maison"), or the welcome photo. */
+    /** Key facts shown as chips on mobile: labels.hero.facts, or the first amenities (3 fit on one line). */
+    getFacts() {
+        const facts = this.config.labels?.hero?.facts;
+        return (Array.isArray(facts) && facts.length ? facts : this.config.house_config?.amenities || []).slice(0, 3);
+    }
+
+    /** Mobile stories: the hero_slides collection, or the welcome photo. */
     getStories() {
-        const { welcome, identity } = this.config;
-        const house = (this.config.house_features || [])[0];
-        const photos = house ? (house.gallery?.length ? house.gallery : [house.thumbnail].filter(Boolean)) : [];
-        if (photos.length) return photos.map((src) => ({ src, label: house.title }));
-        return welcome.image ? [{ src: welcome.image, label: identity.name }] : [];
+        const slides = this.config.heroSlides || [];
+        if (slides.length) return slides;
+        const { welcome } = this.config;
+        return welcome.image ? [{ src: welcome.image, caption: "" }] : [];
     }
 
     showStory(index) {
@@ -47,6 +68,9 @@ export class PavHero extends BaseComponent {
         });
         void this.storyBars[this.storyIndex].offsetWidth; // restart the progress animation
         this.storyBars[this.storyIndex].classList.add("is-active");
+        const { caption } = this.stories[this.storyIndex];
+        const position = count > 1 ? `${this.storyIndex + 1} / ${count}` : "";
+        this.storyCaption.textContent = [caption, position].filter(Boolean).join(" · ");
 
         clearTimeout(this.storyTimer);
         if (this.storyAutoplay && this.storyVisible && !document.hidden && this.isMobile.matches) {
@@ -60,6 +84,7 @@ export class PavHero extends BaseComponent {
 
         this.storySlides = [...root.querySelectorAll(".pav-story")];
         this.storyBars = [...root.querySelectorAll(".pav-story-bar")];
+        this.storyCaption = root.querySelector("[data-story-caption]");
         this.isMobile = window.matchMedia("(max-width: 767px)");
         // Auto-advance only with animations on (not for visitors who prefer reduced motion)
         this.storyAutoplay = document.documentElement.classList.contains("pav-motion");
@@ -102,7 +127,7 @@ export class PavHero extends BaseComponent {
         const { hero = {}, contact = {} } = this.config.labels || {};
         const form = contact.form || {};
         const minPrice = minNightlyPrice(this.config.pricing);
-        const priceLabel = minPrice != null ? `${fmtPrice(minPrice)} <span class="font-normal text-pav-muted">/ nuit</span>` : "";
+        const facts = this.getFacts();
         this.stories = this.getStories();
 
         // Each word slides up from its own mask
@@ -121,29 +146,55 @@ export class PavHero extends BaseComponent {
                     <div class="pav-hero-scrim absolute inset-0"></div>
                 </div>
 
-                <!-- Mobile: full-screen photo stories -->
+                <!-- Mobile: full-screen photo stories (hero_slides) -->
                 ${this.stories.length ? `
                     <div data-stories class="absolute inset-0 md:hidden">
                         ${this.stories.map((story, k) => `
                             <div class="pav-story${k === 0 ? " is-active" : ""}">
-                                <img src="${story.src}" alt="${story.label}, photo ${k + 1} sur ${this.stories.length}" ${k === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" class="pav-story-photo h-full w-full object-cover">
+                                <img src="${story.src}" alt="${story.caption || identity.name}, photo ${k + 1} sur ${this.stories.length}" ${k === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" class="pav-story-photo h-full w-full object-cover">
                             </div>
                         `).join("")}
                         <div class="pav-story-scrim absolute inset-0" aria-hidden="true"></div>
                         <div class="absolute inset-x-3 top-2 z-10 flex gap-1" aria-hidden="true">
                             ${this.stories.map(() => `<span class="pav-story-bar"><span></span></span>`).join("")}
                         </div>
-                        <button type="button" data-story-prev class="absolute bottom-72 left-0 top-20 w-[35%]" aria-label="Photo précédente"></button>
-                        <button type="button" data-story-next class="absolute bottom-72 right-0 top-20 w-[65%]" aria-label="Photo suivante"></button>
+                        <p data-story-caption class="absolute left-5 top-[76px] z-10 text-[13px] font-semibold text-white/90" aria-hidden="true"></p>
+                        <!-- The text block below sits above these tap zones and keeps its own taps -->
+                        <button type="button" data-story-prev class="absolute bottom-0 left-0 top-20 w-[35%]" aria-label="Photo précédente"></button>
+                        <button type="button" data-story-next class="absolute bottom-0 right-0 top-20 w-[65%]" aria-label="Photo suivante"></button>
                     </div>
                 ` : ""}
 
-                <div class="relative z-10 mx-auto mt-auto w-full max-w-[1360px] px-5 pb-3 md:px-10 md:pb-11 md:pt-28">
-                    <div class="mb-6 hidden gap-2 md:flex">${FLAGS}</div>
-                    <p class="pav-in hidden text-base font-semibold uppercase tracking-[0.16em] text-pav-yellow md:block" style="--d:.1s">${welcome.subtitle || ""}</p>
-                    <h1 class="pav-h1 mb-6 max-w-[1100px] md:mb-10 md:mt-3">${title}</h1>
+                <div class="relative z-10 mt-auto px-5 pb-2 md:hidden">
+                    <div class="mb-5 flex gap-2">${FLAGS}</div>
+                    <p class="pav-in text-xs font-semibold uppercase tracking-[0.16em] text-pav-yellow" style="--d:.1s">${welcome.subtitle || ""}</p>
+                    <h1 class="pav-hero-title mt-3 font-display text-[42px] leading-[1.04] tracking-[-0.03em]">${title}</h1>
+                    ${facts.length ? `
+                        <ul class="pav-hero-facts pav-in mt-5 flex flex-wrap gap-2 text-[13px] font-medium" style="--d:.6s">
+                            ${facts.map((fact) => `<li class="rounded-full border border-white/25 bg-pav-navy/35 px-3 py-1.5">${fact}</li>`).join("")}
+                        </ul>
+                    ` : ""}
+                    <div class="pav-in mt-7 flex items-center gap-4 rounded-[14px] bg-white py-2 pl-4 pr-2 text-pav-navy shadow-[0_18px_40px_-16px_rgba(0,0,0,.6)]" style="--d:.8s">
+                        ${minPrice != null ? `
+                            <p class="text-xs leading-tight text-pav-muted" aria-live="polite">
+                                <span data-price-label></span>
+                                <strong data-price class="block text-lg font-semibold text-pav-navy"></strong>
+                            </p>
+                        ` : ""}
+                        <button type="button" data-cta class="pav-btn min-h-12 flex-1 text-[15px]"></button>
+                    </div>
+                    <a href="#maison" class="pav-in mx-auto mt-4 flex min-h-11 w-max flex-col items-center justify-center px-3 text-[11px] font-medium uppercase tracking-[0.12em] text-white/60" style="--d:1s">
+                        ${hero.discover || "Découvrir la maison"}
+                        <i data-lucide="chevron-down" class="pav-scroll-hint h-[18px] w-[18px]"></i>
+                    </a>
+                </div>
 
-                    <div class="hidden items-end justify-between gap-8 md:flex">
+                <div class="relative z-10 mx-auto mt-auto hidden w-full max-w-[1360px] px-10 pb-11 pt-28 md:block">
+                    <div class="mb-6 flex gap-2">${FLAGS}</div>
+                    <p class="pav-in text-base font-semibold uppercase tracking-[0.16em] text-pav-yellow" style="--d:.1s">${welcome.subtitle || ""}</p>
+                    <h1 class="pav-h1 mb-10 mt-3 max-w-[1100px]">${title}</h1>
+
+                    <div class="flex items-end justify-between gap-8">
                         <div class="pav-in flex max-w-[980px] flex-1 items-stretch rounded-md bg-white p-2 text-pav-navy shadow-[0_24px_60px_-20px_rgba(0,0,0,.5)]" style="--d:.8s">
                             <button type="button" data-open-dates class="flex flex-1 flex-col gap-1 border-r border-pav-line px-[18px] py-2.5 text-left">
                                 <span class="text-xs font-bold uppercase tracking-[0.1em] text-pav-muted">${form.arrival || "Arrivée"}</span>
@@ -153,24 +204,14 @@ export class PavHero extends BaseComponent {
                                 <span class="text-xs font-bold uppercase tracking-[0.1em] text-pav-muted">${form.departure || "Départ"}</span>
                                 <span data-departure class="text-[17px] font-medium">Ajouter une date</span>
                             </button>
-                            <div class="flex flex-1 flex-col justify-center gap-1 px-[18px] py-2.5">
-                                <span class="text-xs font-bold uppercase tracking-[0.1em] text-pav-muted">À partir de</span>
-                                <span class="text-[17px] font-semibold">${priceLabel}</span>
+                            <div class="flex flex-1 flex-col justify-center gap-1 px-[18px] py-2.5" aria-live="polite">
+                                <span data-price-label class="text-xs font-bold uppercase tracking-[0.1em] text-pav-muted"></span>
+                                <span data-price class="text-[17px] font-semibold"></span>
                             </div>
-                            <button type="button" data-open-dates class="pav-btn rounded px-6 text-base">${hero.availability || "Disponibilités"}</button>
+                            <button type="button" data-cta class="pav-btn rounded px-6 text-base"></button>
                         </div>
                         <a href="#maison" class="pav-in flex items-center gap-3 whitespace-nowrap text-xs font-semibold uppercase tracking-[0.2em] text-white" style="--d:1s">
                             <span class="pav-cue" aria-hidden="true"><span></span></span>${hero.discover || ""}
-                        </a>
-                    </div>
-
-                    <div class="pav-in md:hidden" style="--d:.8s">
-                        <div class="flex gap-2.5">
-                            <button type="button" data-open-dates class="pav-btn min-h-14 flex-1 text-base">${hero.availability || "Disponibilités"}</button>
-                            ${minPrice != null ? `<button type="button" data-open-dates class="min-h-14 rounded-lg border-[1.5px] border-white/40 px-4 text-[15px] font-semibold">dès ${fmtPrice(minPrice)}</button>` : ""}
-                        </div>
-                        <a href="#maison" class="pav-scroll-hint mx-auto mt-3 flex h-11 w-11 items-center justify-center text-white/85" aria-label="${hero.discover || "Découvrir la maison"}">
-                            <i data-lucide="chevron-down" class="h-7 w-7"></i>
                         </a>
                     </div>
                 </div>
@@ -178,7 +219,10 @@ export class PavHero extends BaseComponent {
         `;
 
         this.querySelectorAll("[data-open-dates]").forEach((button) => button.addEventListener("click", openDates));
-        this.updateDates();
+        this.querySelectorAll("[data-cta]").forEach((button) => {
+            button.addEventListener("click", () => (booking.hasRange ? goToBookingForm() : openDates()));
+        });
+        this.updateBooking();
         if (this.stories.length) this.setupStories();
     }
 }

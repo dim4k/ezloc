@@ -53,7 +53,8 @@ export function minNightlyPrice(pricing = {}) {
 }
 
 const AMENITY_ICONS = [
-    [/personne|voyageur|couchage/i, "users"],
+    [/personne|\bpers\b|voyageur|couchage/i, "users"],
+    [/plage|\bmer\b/i, "waves"],
     [/bain|douche/i, "bath"],
     [/chambre|\blits?\b/i, "bed-double"],
     [/wifi|internet|fibre|tv/i, "wifi"],

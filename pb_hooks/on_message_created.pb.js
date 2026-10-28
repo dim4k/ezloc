@@ -25,8 +25,9 @@ onRecordAfterCreateRequest((e) => {
     const message        = record.getString("message");
     const priceEstimation = record.getString("price_estimation") || "Non calculée";
 
-    // Optional fields (migration 1792966000): guests and selected options
+    // Optional fields (migrations 1792966000 and 1793100000): guests, selected options and phone
     const { escapeHtml, optionsSummary } = require(`${__hooks}/lib/booking_emails.js`);
+    const phone = record.getString("phone");
     const guests = record.getInt("guests");
     let options = [];
     try {
@@ -35,7 +36,8 @@ onRecordAfterCreateRequest((e) => {
         options = [];
     }
     const extraRows = [
-        guests ? ["Voyageurs", escapeHtml(guests)] : null,
+        phone ? ["Téléphone", `<a href="tel:${escapeHtml(phone.replace(/\s/g, ""), 40)}" style="color: #2563eb;">${escapeHtml(phone, 40)}</a>`] : null,
+        guests ?["Voyageurs", escapeHtml(guests)] : null,
         options.length ? ["Options", optionsSummary(options).join("<br>")] : null,
     ].filter(Boolean).map(([label, value]) => `
       <tr>

@@ -67,7 +67,9 @@ export class PavContact extends BaseComponent {
             departure: booking.end ? fmtLongDate(booking.end) : "",
             price_estimation: estimate ? fmtPrice(estimate.total) : "Non calculé",
         };
-        // Optional fields (ignored by PocketBase instances without the 1792966000 migration)
+        // Optional fields (ignored by PocketBase instances without the 1792966000 / 1793100000 migrations)
+        const phone = formData.get("phone")?.trim();
+        if (phone) data.phone = phone;
         if (booking.guests) data.guests = booking.guests;
         const options = booking.selectedOptions();
         if (options.length) {
@@ -85,13 +87,16 @@ export class PavContact extends BaseComponent {
 
         try {
             await sendBookingRequest(data);
+            this.renderSuccess(data, estimate);
             form.reset();
             form.classList.add("hidden");
             this.querySelector("[data-success]").classList.replace("hidden", "flex");
             booking.set({ start: null, end: null, options: new Set() });
+            this.querySelector("#reserver").scrollIntoView({ behavior: "smooth" });
         } catch (error) {
             console.error("Submission Error:", error);
             const summary = [
+                data.phone ? `Téléphone : ${data.phone}` : "",
                 data.guests ? `${data.guests} voyageurs` : "",
                 ...options.map((o) => o.name),
             ].filter(Boolean).join(", ");
@@ -102,6 +107,27 @@ export class PavContact extends BaseComponent {
             submitBtn.disabled = false;
             submitBtn.textContent = label;
         }
+    }
+
+    /** Recap of the request just sent (the booking state is cleared right after). */
+    renderSuccess(data, estimate) {
+        const labels = this.config.labels.contact || {};
+        const owner = this.config.contact.name || "Nous";
+        const row = (label, value) => `
+            <div class="flex justify-between gap-4 border-t border-white/10 py-3 first:border-0">
+                <dt class="text-pav-muted-dark">${label}</dt><dd class="text-right font-semibold">${value}</dd>
+            </div>`;
+        const rows = [
+            booking.hasRange ? row("Dates", `${fmtShortDate(booking.start)} → ${fmtShortDate(booking.end)}`) : row("Dates", "À préciser"),
+            estimate ? row("Durée", `${estimate.nights} nuit${estimate.nights > 1 ? "s" : ""}`) : "",
+            data.guests ? row("Voyageurs", data.guests) : "",
+            ...(estimate?.options || []).map((option) => row(option.name, fmtPrice(option.amount))),
+            estimate ? row("Total estimé", fmtPrice(estimate.total)) : "",
+        ].join("");
+
+        this.querySelector("[data-success-recap]").innerHTML = rows;
+        this.querySelector("[data-success-text]").textContent =
+            `${owner} vous répond ${labels.responseTime || "très rapidement"} à l'adresse ${data.email} pour confirmer la disponibilité.`;
     }
 
     render() {
@@ -194,6 +220,9 @@ export class PavContact extends BaseComponent {
                             <label class="pav-field">${form.email || "Email"}
                                 <input type="email" name="email" required autocomplete="email">
                             </label>
+                            <label class="pav-field"><span>${form.phone || "Téléphone"} <span class="font-normal text-pav-muted-dark">(facultatif)</span></span>
+                                <input type="tel" name="phone" autocomplete="tel" inputmode="tel" maxlength="40">
+                            </label>
                             <label class="pav-field">${form.message || "Message"}
                                 <textarea name="message" rows="4" required placeholder="Bonjour, je souhaiterais réserver…"></textarea>
                             </label>
@@ -205,7 +234,9 @@ export class PavContact extends BaseComponent {
                         <div data-success class="hidden flex-col items-center rounded-2xl bg-pav-navy-2 px-6 py-12 text-center" role="status">
                             <span class="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-full bg-pav-yellow text-pav-navy"><i data-lucide="check" class="h-8 w-8"></i></span>
                             <h3 class="pav-h3">Demande envoyée !</h3>
-                            <p class="mt-3 max-w-md text-pav-muted-dark">Merci de nous avoir contactés. Nous avons bien reçu votre demande et nous reviendrons vers vous très rapidement.</p>
+                            <p data-success-text class="mt-3 max-w-md text-pav-muted-dark"></p>
+                            <dl data-success-recap class="mt-7 w-full max-w-sm rounded-xl bg-pav-navy px-5 py-2 text-left text-sm"></dl>
+                            <p class="mt-4 text-[13px] text-pav-muted-dark">Prix indicatif : rien n'est réservé avant la confirmation.</p>
                             <button type="button" data-reset class="mt-8 rounded-lg border border-white/25 px-6 py-3 font-semibold transition-colors hover:bg-white/10">Envoyer une autre demande</button>
                         </div>
                     </div>

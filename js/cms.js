@@ -72,7 +72,8 @@ export async function initCMS() {
             activitiesRecords,
             faqRecords,
             stayRulesRecords,
-            bookingOptionsRecords
+            bookingOptionsRecords,
+            heroSlidesRecords
         ] = await Promise.all([
             fetchSingle('site_identity'),
             fetchSingle('welcome'),
@@ -87,7 +88,8 @@ export async function initCMS() {
             fetchList('faq', 'order'),
             // Optional collections (added later): an empty list when missing
             fetchList('stay_rules', 'created'),
-            fetchList('booking_options', 'order')
+            fetchList('booking_options', 'order'),
+            fetchList('hero_slides', 'order')
         ]);
 
         // Populate SITE_CONFIG based on fetched data
@@ -229,6 +231,14 @@ export async function initCMS() {
             price: o.price,
             unit: o.unit
         }));
+
+        // 13. Mobile hero photos (full-screen stories)
+        SITE_CONFIG.heroSlides = (heroSlidesRecords || [])
+            .filter(s => s.image)
+            .map(s => ({
+                src: getFileUrl(s, s.image),
+                caption: s.caption || ""
+            }));
 
         console.log("✅ CMS Data received and mapped.");
 
