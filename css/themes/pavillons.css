@@ -325,6 +325,12 @@ html[data-theme="pavillons"] :focus-visible {
         border-radius: 16px;
     }
 }
+/* Activities sheet: dark, as tall as its content */
+.pav-sheet.pav-sheet-fit {
+    height: auto;
+    background: #16283A;
+    color: #FFFFFF;
+}
 
 .pav-day {
     display: flex;
