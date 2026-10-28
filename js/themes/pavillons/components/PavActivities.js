@@ -45,7 +45,7 @@ export class PavActivities extends BaseComponent {
                             <article class="${i % 2 ? "mt-24" : ""}">
                                 ${activity.images?.[0] ? `
                                     <div class="overflow-hidden rounded">
-                                        <img src="${activity.images[0]}" alt="" loading="lazy" decoding="async" class="pav-unveil aspect-video w-full object-cover">
+                                        <img src="${activity.images[0]}" alt="${activity.title.trim()}" loading="lazy" decoding="async" class="pav-unveil aspect-video w-full object-cover">
                                     </div>
                                 ` : ""}
                                 <div class="pav-reveal flex items-baseline gap-5 pt-6">

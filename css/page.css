@@ -1,0 +1,37 @@
+/* Standalone pages rendered by pb_hooks/lib/seo.js (legal pages, 404) */
+body {
+    margin: 0;
+    background: #F5F3EE;
+    color: #0C1823;
+    font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+header,
+main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+header {
+    padding-top: 28px;
+}
+
+main {
+    padding-bottom: 64px;
+}
+
+h1 {
+    font: 400 clamp(32px, 6vw, 48px)/1.1 Georgia, "Times New Roman", serif;
+    margin: 40px 0 24px;
+}
+
+h2 {
+    font-size: 20px;
+    margin: 36px 0 8px;
+}
+
+a {
+    color: #1D4FA0;
+    text-underline-offset: 3px;
+}

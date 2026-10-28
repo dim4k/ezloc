@@ -57,7 +57,7 @@ export default {
     bodyClass: "bg-pav-chalk font-body text-pav-navy",
 
     styles: [
-        "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@400;500;600;700&display=swap",
+        "css/themes/fonts-pavillons.css",
         "css/themes/pavillons.css",
     ],
 

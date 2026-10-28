@@ -13,8 +13,9 @@ routerUse((e) => {
         headers.set("Content-Security-Policy", [
             "default-src 'self'",
             "script-src 'self'",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "font-src 'self' https://fonts.gstatic.com",
+            "style-src 'self' 'unsafe-inline'",
+            // Fonts are served by the site (css/themes/fonts-*.css)
+            "font-src 'self'",
             // Map tiles and images pasted into CMS rich text
             "img-src 'self' data: blob: https:",
             "connect-src 'self'",

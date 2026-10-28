@@ -4,12 +4,12 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{{SEO_TITLE}}</title>
-    
+
         <meta
             name="description"
             content="{{SEO_DESCRIPTION}}"
         />
-        <link rel="icon" type="image/png" href="{{SEO_FAVICON}}" />
+        <link rel="canonical" href="{{SEO_URL}}" />
 
         <!-- Preload Critical Modules -->
         <link rel="modulepreload" href="js/app.js">
@@ -21,74 +21,30 @@
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website" />
+        <meta property="og:locale" content="fr_FR" />
         <meta property="og:url" content="{{SEO_URL}}" />
         <meta property="og:title" content="{{SEO_TITLE}}" />
         <meta property="og:description" content="{{SEO_DESCRIPTION}}" />
-        <meta property="og:image" content="{{SEO_IMAGE}}" />
 
         <!-- Twitter -->
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="{{SEO_URL}}" />
-        <meta property="twitter:title" content="{{SEO_TITLE}}" />
-        <meta property="twitter:description" content="{{SEO_DESCRIPTION}}" />
-        <meta property="twitter:image" content="{{SEO_IMAGE}}" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="{{SEO_TITLE}}" />
+        <meta name="twitter:description" content="{{SEO_DESCRIPTION}}" />
 
-        <!-- Structured Data (JSON-LD) -->
-        <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "VacationRental",
-            "name": "{{SEO_TITLE}}",
-            "description": "{{SEO_DESCRIPTION}}",
-            "image": "{{SEO_IMAGE}}",
-            "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "{{SEO_ADDRESS_STREET}}",
-                "addressLocality": "{{SEO_ADDRESS_LOCALITY}}",
-                "postalCode": "{{SEO_ADDRESS_ZIP}}",
-                "addressCountry": "FR"
-            },
-            "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": {{SEO_LAT}},
-                "longitude": {{SEO_LNG}}
-            },
-            "url": "{{SEO_URL}}",
-            "telephone": "{{SEO_PHONE}}",
-            "priceRange": "{{SEO_PRICE_RANGE}}"
-        }
-        </script>
+        <!-- seo:head (favicon, share image, font preloads and structured data, from the CMS: pb_hooks/seo.pb.js) -->
 
-        <!-- Tailwind CSS (Built via CLI) -->
-        <!-- <link rel="stylesheet" href="css/style.css" /> is already included below -->
-
-        <!-- Leaflet CSS & JS -->
-        <!-- Non-blocking: js/app.js switches media to "all" (no inline onload, see the Content-Security-Policy) -->
-        <link
-            rel="stylesheet"
-            href="css/vendor/leaflet/leaflet.css"
-            media="print"
-            data-async-style
-        />
-        <noscript><link rel="stylesheet" href="css/vendor/leaflet/leaflet.css"></noscript>
-        <script src="js/vendor/leaflet.js" defer></script>
-
-        <!-- Google Fonts (font families are loaded by the active theme, see js/themes/*/index.js) -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-        <!-- Lucide Icons -->
+        <!-- Lucide Icons (only the icons used, see scripts/vendor.js) -->
         <script src="js/vendor/lucide.js" defer></script>
 
-        <!-- Custom Styles -->
+        <!-- Custom Styles (Tailwind, built via CLI) -->
         <link rel="preload" href="css/style.css" as="style" />
         <link rel="stylesheet" href="css/style.css" />
     </head>
     <body class="antialiased">
-        <!-- L'application est montée ici -->
+        <!-- L'application est montée ici. pb_hooks/seo.pb.js y insère le contenu du CMS pour les moteurs de recherche -->
         <app-root></app-root>
 
-        <!-- Application Logic (theme-specific assets are loaded by js/theme.js) -->
+        <!-- Application Logic (theme-specific assets are loaded by js/theme.js, Leaflet by the map section) -->
         <script type="module" src="js/app.js"></script>
     </body>
 </html>

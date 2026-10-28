@@ -9,6 +9,9 @@ export class SiteFooter extends BaseComponent {
 
         const year = new Date().getFullYear();
         const { footer } = this.config.labels;
+        const pages = (this.config.pages || [])
+            .map((page) => `<a href="/${page.slug}" class="hover:text-white transition-colors underline">${page.title}</a>`)
+            .join(" · ");
         this.innerHTML = `
             <footer class="bg-breizh-navy text-white py-12 border-t border-slate-700">
                 <div class="max-w-7xl mx-auto px-4">
@@ -20,6 +23,7 @@ export class SiteFooter extends BaseComponent {
                         
                         <div class="text-center md:text-right text-slate-300 text-sm">
                             &copy; ${year} ${footer.rights} | ${footer.credits} <a href="https://antoine.kim" target="_blank" class="text-slate-300 hover:text-white transition-colors underline">Antoine Kim</a>
+                            ${pages ? `<p class="mt-2">${pages}</p>` : ""}
                         </div>
                     </div>
                 </div>

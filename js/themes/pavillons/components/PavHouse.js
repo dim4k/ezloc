@@ -106,7 +106,7 @@ export class PavHouse extends BaseComponent {
                     ${photos.map((src, k) => `
                         <figure class="m-0 shrink-0 snap-start overflow-hidden rounded-2xl bg-pav-sand md:basis-full md:rounded-none ${multi ? "basis-[88%]" : "basis-full"}">
                             <button type="button" data-zoom="${k}" class="pav-zoom-btn block w-full" aria-label="Agrandir : ${feature.title}, photo ${k + 1} sur ${photos.length}">
-                                <img src="${src}" alt="" ${k > 0 ? 'loading="lazy"' : ""} decoding="async" class="aspect-[4/3] w-full object-cover md:aspect-[16/10]">
+                                <img src="${src}" alt="${feature.title}, photo ${k + 1} sur ${photos.length}" ${k > 0 ? 'loading="lazy"' : ""} decoding="async" class="aspect-[4/3] w-full object-cover md:aspect-[16/10]">
                             </button>
                         </figure>
                     `).join("")}

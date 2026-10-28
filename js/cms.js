@@ -54,43 +54,70 @@ export const thumbUrl = (url, size) => {
 /**
  * Initialize the CMS connection and update the SITE_CONFIG
  */
+const SINGLES = ['site_identity', 'welcome', 'house_config', 'activities_config', 'contact', 'location', 'pricing_config'];
+const LISTS = [
+    ['pricing_periods', 'start'],
+    ['house_features', 'order'],
+    ['activities', 'order'],
+    ['faq', 'order'],
+    // Optional collections (added later): an empty list when missing
+    ['stay_rules', 'created'],
+    ['booking_options', 'order'],
+    ['hero_slides', 'order'],
+    ['pages', 'title']
+];
+
+/**
+ * All the site content: { site_identity: record | null, …, house_features: [records], … }.
+ * Inlined in the page by pb_hooks/seo.pb.js; otherwise one request to /api/site,
+ * and as a last resort one request per collection.
+ */
+async function loadRecords() {
+    const inline = document.getElementById("site-data");
+    if (inline) {
+        try {
+            return JSON.parse(inline.textContent);
+        } catch (e) {
+            console.warn("Invalid inline site data", e);
+        }
+    }
+
+    try {
+        const response = await fetch(`${PB_URL}/api/site`);
+        if (response.ok) return await response.json();
+    } catch (e) {
+        console.warn("Failed to fetch /api/site", e);
+    }
+
+    const [singles, lists] = await Promise.all([
+        Promise.all(SINGLES.map((name) => fetchSingle(name))),
+        Promise.all(LISTS.map(([name, sort]) => fetchList(name, sort)))
+    ]);
+    const data = {};
+    SINGLES.forEach((name, i) => { data[name] = singles[i]; });
+    LISTS.forEach(([name], i) => { data[name] = lists[i]; });
+    return data;
+}
+
 export async function initCMS() {
     try {
         console.log("🔌 Connecting to PocketBase...");
 
-        // Concurrent fetching for better performance
-        const [
-            identityRecord,
-            welcomeRecord,
-            houseConfigRecord,
-            activitiesConfigRecord,
-            contactRecord,
-            locationRecord,
-            pricingConfigRecord,
-            pricingPeriodsRecords,
-            featuresRecords,
-            activitiesRecords,
-            faqRecords,
-            stayRulesRecords,
-            bookingOptionsRecords,
-            heroSlidesRecords
-        ] = await Promise.all([
-            fetchSingle('site_identity'),
-            fetchSingle('welcome'),
-            fetchSingle('house_config'),
-            fetchSingle('activities_config'),
-            fetchSingle('contact'),
-            fetchSingle('location'),
-            fetchSingle('pricing_config'),
-            fetchList('pricing_periods', 'start'),
-            fetchList('house_features', 'order'),
-            fetchList('activities', 'order'),
-            fetchList('faq', 'order'),
-            // Optional collections (added later): an empty list when missing
-            fetchList('stay_rules', 'created'),
-            fetchList('booking_options', 'order'),
-            fetchList('hero_slides', 'order')
-        ]);
+        const data = await loadRecords();
+        const identityRecord = data.site_identity;
+        const welcomeRecord = data.welcome;
+        const houseConfigRecord = data.house_config;
+        const activitiesConfigRecord = data.activities_config;
+        const contactRecord = data.contact;
+        const locationRecord = data.location;
+        const pricingConfigRecord = data.pricing_config;
+        const pricingPeriodsRecords = data.pricing_periods;
+        const featuresRecords = data.house_features;
+        const activitiesRecords = data.activities;
+        const faqRecords = data.faq;
+        const stayRulesRecords = data.stay_rules;
+        const bookingOptionsRecords = data.booking_options;
+        const heroSlidesRecords = data.hero_slides;
 
         // Populate SITE_CONFIG based on fetched data
 
@@ -239,6 +266,9 @@ export async function initCMS() {
                 src: getFileUrl(s, s.image),
                 caption: s.caption || ""
             }));
+
+        // 14. Published pages (legal notice, privacy policy), linked from the footer
+        SITE_CONFIG.pages = (data.pages || []).map(p => ({ slug: p.slug, title: p.title }));
 
         console.log("✅ CMS Data received and mapped.");
 

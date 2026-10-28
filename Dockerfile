@@ -19,25 +19,9 @@ COPY js ./js
 # Build CSS
 RUN npm run build:css
 
-# --- Organize Vendor Files (in Builder) ---
-RUN mkdir -p js/vendor css/vendor/leaflet
-
-# Leaflet
-RUN cp node_modules/leaflet/dist/leaflet.js js/vendor/leaflet.js \
-    && cp node_modules/leaflet/dist/leaflet.css css/vendor/leaflet/leaflet.css \
-    && cp -r node_modules/leaflet/dist/images css/vendor/leaflet/images
-
-# AOS
-RUN cp node_modules/aos/dist/aos.js js/vendor/aos.js \
-    && cp node_modules/aos/dist/aos.css css/vendor/aos.css
-
-# Flatpickr
-RUN cp node_modules/flatpickr/dist/flatpickr.min.js js/vendor/flatpickr.js \
-    && cp node_modules/flatpickr/dist/l10n/fr.js js/vendor/flatpickr-fr.js \
-    && cp node_modules/flatpickr/dist/flatpickr.min.css css/vendor/flatpickr.css
-
-# Lucide
-RUN cp node_modules/lucide/dist/umd/lucide.min.js js/vendor/lucide.js
+# --- Vendor files: libraries, fonts and the Lucide icon subset (scans js/ for the icons used) ---
+COPY scripts ./scripts
+RUN npm run vendor
 
 
 # --- Stage 2: Final Image ---
@@ -120,4 +104,5 @@ EXPOSE 8090
 
 # 7. Start
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/pocketbase", "serve", "--http=0.0.0.0:8090", "--dir=/pb_data", "--publicDir=/pb_public"]
+# --indexFallback=false: unknown paths answer 404 instead of the home page (the site only uses "/" and #anchors)
+CMD ["/pocketbase", "serve", "--http=0.0.0.0:8090", "--dir=/pb_data", "--publicDir=/pb_public", "--indexFallback=false"]

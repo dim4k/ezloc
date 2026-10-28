@@ -215,3 +215,32 @@ section[id] {
     box-shadow: 0 10px 15px -3px rgba(30, 41, 59, 0.3), 0 4px 6px -2px rgba(30, 41, 59, 0.15);
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
+
+/* --- Server-rendered content (pb_hooks/lib/seo.js) ---
+   The CMS content as plain HTML for search engines and AI crawlers. The app replaces it on start;
+   it only becomes visible if the app has not started after a few seconds (JavaScript off or failing). */
+.seo-fallback {
+    max-width: 72ch;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+    line-height: 1.6;
+    opacity: 0;
+    animation: seo-fallback-reveal 0s linear 4s forwards;
+}
+
+@keyframes seo-fallback-reveal {
+    to {
+        opacity: 1;
+    }
+}
+
+.seo-fallback h1 { font-size: 2rem; line-height: 1.2; margin: 1.5rem 0 1rem; }
+.seo-fallback h2 { font-size: 1.5rem; margin: 2.5rem 0 0.75rem; }
+.seo-fallback h3 { font-size: 1.15rem; margin: 1.5rem 0 0.25rem; }
+.seo-fallback p,
+.seo-fallback ul,
+.seo-fallback table { margin: 0.5rem 0; }
+.seo-fallback ul { list-style: disc; padding-left: 1.25rem; }
+.seo-fallback td,
+.seo-fallback th { padding: 0.25rem 1rem 0.25rem 0; text-align: left; }
+.seo-fallback a { text-decoration: underline; }

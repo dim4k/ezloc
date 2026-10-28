@@ -4,45 +4,19 @@
  * or from the `?theme=` URL parameter to preview another theme.
  */
 
+import { loadStyle, loadScript } from "./shared/assets.js";
+
 const THEMES = {
     classic: () => import("./themes/classic/index.js"),
     pavillons: () => import("./themes/pavillons/index.js"),
 };
 
+// Also the default of pb_hooks/lib/seo.js (font preloads)
 export const DEFAULT_THEME = "classic";
-
-// Never let a slow stylesheet (e.g. Google Fonts) block the page for too long
-const STYLE_TIMEOUT_MS = 2500;
 
 export function resolveThemeName(display = {}) {
     const fromUrl = new URLSearchParams(window.location.search).get("theme");
     return [fromUrl, display.theme].find((name) => name && THEMES[name]) || DEFAULT_THEME;
-}
-
-function loadStyle(href) {
-    if (document.querySelector(`link[rel="stylesheet"][href="${href}"]`)) return Promise.resolve();
-    return new Promise((resolve) => {
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = href;
-        link.onload = link.onerror = resolve;
-        document.head.appendChild(link);
-        setTimeout(resolve, STYLE_TIMEOUT_MS);
-    });
-}
-
-function loadScript(src) {
-    if (document.querySelector(`script[src="${src}"]`)) return Promise.resolve();
-    return new Promise((resolve) => {
-        const script = document.createElement("script");
-        script.src = src;
-        script.onload = resolve;
-        script.onerror = () => {
-            console.warn(`Failed to load ${src}`);
-            resolve();
-        };
-        document.head.appendChild(script);
-    });
 }
 
 /**

@@ -1,10 +1,12 @@
 import { BaseComponent } from "../../../shared/BaseComponent.js";
+import { loadLeaflet, whenNear } from "../../../shared/assets.js";
 
 export class MapSection extends BaseComponent {
     connectedCallback() {
         super.connectedCallback();
-        // Initialize map after component is mounted to DOM
-        setTimeout(() => this.initMap(), 100);
+        // Leaflet is only downloaded when the map section approaches the viewport
+        const mapEl = this.querySelector("#leaflet-map");
+        if (mapEl) whenNear(mapEl, () => loadLeaflet().then(() => this.initMap()));
     }
 
     initMap() {

@@ -130,6 +130,10 @@ export class PavHero extends BaseComponent {
         const facts = this.getFacts();
         this.stories = this.getStories();
 
+        // The only <h1> of the page, read by screen readers and search engines. The two visual titles below
+        // (mobile and desktop layouts) are hidden from them. Same text as pb_hooks/lib/seo.js.
+        const heading = welcome.subtitle ? `${welcome.title} – ${welcome.subtitle}` : welcome.title || identity.name;
+
         // Each word slides up from its own mask
         const title = (welcome.title || "")
             .split(/\s+/)
@@ -138,6 +142,7 @@ export class PavHero extends BaseComponent {
 
         this.innerHTML = `
             <section id="top" class="relative flex h-[100svh] min-h-[560px] flex-col overflow-hidden bg-pav-navy text-white md:h-auto md:min-h-[840px]">
+                <h1 class="sr-only">${heading}</h1>
                 <!-- Desktop: blurred full-bleed photo with parallax -->
                 <div class="absolute inset-0 hidden md:block" aria-hidden="true">
                     <div class="pav-parallax absolute -inset-x-4 -bottom-4 -top-60">
@@ -167,8 +172,8 @@ export class PavHero extends BaseComponent {
 
                 <div class="relative z-10 mt-auto px-5 pb-2 md:hidden">
                     <div class="mb-5 flex gap-2">${FLAGS}</div>
-                    <p class="pav-in text-xs font-semibold uppercase tracking-[0.16em] text-pav-yellow" style="--d:.1s">${welcome.subtitle || ""}</p>
-                    <h1 class="pav-hero-title mt-3 font-display text-[42px] leading-[1.04] tracking-[-0.03em]">${title}</h1>
+                    <p class="pav-in text-xs font-semibold uppercase tracking-[0.16em] text-pav-yellow" style="--d:.1s" aria-hidden="true">${welcome.subtitle || ""}</p>
+                    <p class="pav-hero-title mt-3 font-display text-[42px] leading-[1.04] tracking-[-0.03em]" aria-hidden="true">${title}</p>
                     ${facts.length ? `
                         <ul class="pav-hero-facts pav-in mt-5 flex flex-wrap gap-2 text-[13px] font-medium" style="--d:.6s">
                             ${facts.map((fact) => `<li class="rounded-full border border-white/25 bg-pav-navy/35 px-3 py-1.5">${fact}</li>`).join("")}
@@ -191,8 +196,8 @@ export class PavHero extends BaseComponent {
 
                 <div class="relative z-10 mx-auto mt-auto hidden w-full max-w-[1360px] px-10 pb-11 pt-28 md:block">
                     <div class="mb-6 flex gap-2">${FLAGS}</div>
-                    <p class="pav-in text-base font-semibold uppercase tracking-[0.16em] text-pav-yellow" style="--d:.1s">${welcome.subtitle || ""}</p>
-                    <h1 class="pav-h1 mb-10 mt-3 max-w-[1100px]">${title}</h1>
+                    <p class="pav-in text-base font-semibold uppercase tracking-[0.16em] text-pav-yellow" style="--d:.1s" aria-hidden="true">${welcome.subtitle || ""}</p>
+                    <p class="pav-h1 mb-10 mt-3 max-w-[1100px]" aria-hidden="true">${title}</p>
 
                     <div class="flex items-end justify-between gap-8">
                         <div class="pav-in flex max-w-[980px] flex-1 items-stretch rounded-md bg-white p-2 text-pav-navy shadow-[0_24px_60px_-20px_rgba(0,0,0,.5)]" style="--d:.8s">

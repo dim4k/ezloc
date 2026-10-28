@@ -42,7 +42,7 @@ export default {
     bodyClass: "bg-slate-50 font-sans text-slate-800",
 
     styles: [
-        "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap",
+        "css/themes/fonts-classic.css",
         "css/vendor/flatpickr.css",
         "css/vendor/aos.css",
     ],

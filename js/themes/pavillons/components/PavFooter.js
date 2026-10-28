@@ -9,12 +9,16 @@ export class PavFooter extends BaseComponent {
 
         const year = new Date().getFullYear();
         const { footer } = this.config.labels;
+        const pages = (this.config.pages || [])
+            .map((page) => `<a href="/${page.slug}" class="underline transition-colors hover:text-white">${page.title}</a>`)
+            .join(" · ");
 
         // Extra bottom padding on mobile so the booking bar never hides the footer
         this.innerHTML = `
             <footer class="border-t border-white/10 bg-pav-navy text-pav-muted-dark">
                 <div class="mx-auto flex max-w-[1360px] flex-col gap-2 px-5 pb-28 pt-8 text-[13px] leading-relaxed md:flex-row md:justify-between md:px-10 md:pb-10 md:text-sm">
                     <span>${this.config.identity.name} · ${footer.location}</span>
+                    ${pages ? `<span>${pages}</span>` : ""}
                     <span>&copy; ${year} ${footer.rights} ${footer.credits} <a href="https://antoine.kim" target="_blank" rel="noopener" class="text-white underline transition-colors hover:text-pav-yellow">Antoine Kim</a></span>
                 </div>
             </footer>
