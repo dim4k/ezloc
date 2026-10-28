@@ -78,5 +78,11 @@ EOF
 EOF
 fi
 
-# Execute the CMD from Dockerfile (PocketBase)
+# Execute the CMD from Dockerfile (PocketBase) as the unprivileged "pb" user.
+# pb_data may come from an older image that ran as root: hand over whatever pb does not own yet.
+if [ "$(id -u)" = "0" ]; then
+    mkdir -p /pb_data
+    find /pb_data ! -user pb -exec chown pb:pb {} +
+    exec su-exec pb "$@"
+fi
 exec "$@"

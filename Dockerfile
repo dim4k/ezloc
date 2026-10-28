@@ -1,5 +1,5 @@
 # --- Stage 1: Build CSS ---
-FROM node:18-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -41,10 +41,11 @@ RUN cp node_modules/lucide/dist/umd/lucide.min.js js/vendor/lucide.js
 
 
 # --- Stage 2: Final Image ---
-FROM alpine:latest
+FROM alpine:3.24
 
-# PocketBase Version
+# PocketBase version and the SHA-256 of its linux_amd64 zip (from the release's checksums.txt)
 ARG PB_VERSION=0.40.6
+ARG PB_SHA256=0e1f609158ed945f809f8a02ae012aa0427129c66ebb63c1aee76f2c0309373f
 
 # SEO Build Arguments
 ARG SEO_TITLE="Maison de Vacances"
@@ -76,10 +77,14 @@ ENV SEO_TITLE=$SEO_TITLE \
 
 
 # 1. Install dependencies
-RUN apk add --no-cache unzip ca-certificates wget jq
+RUN apk add --no-cache unzip ca-certificates wget jq su-exec
 
-# 2. Download and install PocketBase
+# Unprivileged user running PocketBase (see entrypoint.sh)
+RUN adduser -D -H -u 1000 pb
+
+# 2. Download, verify and install PocketBase
 RUN wget https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_amd64.zip \
+    && echo "${PB_SHA256}  pocketbase_${PB_VERSION}_linux_amd64.zip" | sha256sum -c - \
     && unzip pocketbase_${PB_VERSION}_linux_amd64.zip \
     && chmod +x /pocketbase \
     && rm pocketbase_${PB_VERSION}_linux_amd64.zip

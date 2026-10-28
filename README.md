@@ -290,3 +290,5 @@ The image now ships PocketBase 0.40. On first start, PocketBase converts an exis
 3.  Check the site and log into `/_/` with your existing admin account.
 
 To roll back, restore the `pb_data` backup and run the previous image.
+
+PocketBase now runs as an unprivileged `pb` user (uid 1000) instead of root: on start, the entrypoint hands `pb_data` over to that user, so on the host the `./pb_data` files end up owned by uid 1000.
