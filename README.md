@@ -182,7 +182,7 @@ Here are the different sections you can modify via the administration interface:
 | `RESEND_CONFIRMATION` | Set to `false` to disable the confirmation email sent to the guest. |
 
 *   `pb_hooks/on_message_created.pb.js`: notification to the owner (now includes guests and options).
-*   `pb_hooks/on_message_confirmation.pb.js`: confirmation to the guest (dates, estimate, conditions, address). The guest's free-text message is not echoed, user input is escaped and options are checked against `booking_options`, so the form cannot be used to send arbitrary content. The header image uses the PocketBase *Application URL* setting.
+*   `pb_hooks/on_message_confirmation.pb.js`: confirmation to the guest (dates, estimate, conditions, address). The guest's free-text message is not echoed, user input is escaped and options are checked against `booking_options`, so the form cannot be used to send arbitrary content. The owner notification escapes every field too. The header image uses the PocketBase *Application URL* setting.
 
 ---
 

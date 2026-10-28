@@ -133,4 +133,103 @@ function buildConfirmationEmail(data) {
     return { subject, html };
 }
 
-module.exports = { escapeHtml, optionsSummary, buildConfirmationEmail };
+/** Single-line text for an email subject. */
+function subjectText(value, maxLength) {
+    return String(value === undefined || value === null ? "" : value).replace(/\s+/g, " ").trim().slice(0, maxLength);
+}
+
+/**
+ * Notification sent to the owner for a new booking request.
+ * Every value comes from the public form, or from anyone calling the API directly: all of it is escaped.
+ * @param {Object} data
+ * @param {string} data.name
+ * @param {string} data.email
+ * @param {string} [data.arrival]
+ * @param {string} [data.departure]
+ * @param {string} data.message
+ * @param {string} [data.estimate]
+ * @param {string} [data.phone]
+ * @param {number} [data.guests]
+ * @param {Array<{name: string, amount?: number}>} [data.options]
+ * @returns {{subject: string, html: string}}
+ */
+function buildNotificationEmail(data) {
+    const name = escapeHtml(data.name, 80);
+    const email = escapeHtml(data.email, 120);
+    const mailto = encodeURIComponent(String(data.email || "").slice(0, 120));
+    const arrival = escapeHtml(data.arrival, 40) || "Non précisée";
+    const departure = escapeHtml(data.departure, 40) || "Non précisée";
+    const message = escapeHtml(data.message, 5000);
+    const estimate = escapeHtml(data.estimate, 20) || "Non calculée";
+    const phone = String(data.phone || "");
+    const options = optionsSummary(data.options);
+
+    const cell = "padding: 10px 0; border-bottom: 1px solid #e2e8f0;";
+    const extraRows = [
+        phone ? ["Téléphone", `<a href="tel:${escapeHtml(phone.replace(/\s/g, ""), 40)}" style="color: #2563eb;">${escapeHtml(phone, 40)}</a>`] : null,
+        data.guests ? ["Voyageurs", escapeHtml(data.guests)] : null,
+        options.length ? ["Options", options.join("<br>")] : null,
+    ].filter(Boolean).map(([label, value]) => `
+      <tr>
+        <td style="${cell} font-weight: bold;">${label}</td>
+        <td style="${cell}">${value}</td>
+      </tr>`).join("");
+
+    const html = `
+<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b;">
+  <div style="background: #1e3a5f; padding: 24px; border-radius: 12px 12px 0 0;">
+    <h1 style="color: white; margin: 0; font-size: 20px;">📨 Nouvelle demande de réservation</h1>
+    <p style="color: #94a3b8; margin: 4px 0 0;">Location Île-aux-Moines</p>
+  </div>
+
+  <div style="background: #f8fafc; padding: 24px; border: 1px solid #e2e8f0; border-top: none;">
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td style="${cell} font-weight: bold; width: 40%;">Nom</td>
+        <td style="${cell}">${name}</td>
+      </tr>
+      <tr>
+        <td style="${cell} font-weight: bold;">Email</td>
+        <td style="${cell}">
+          <a href="mailto:${mailto}" style="color: #2563eb;">${email}</a>
+        </td>
+      </tr>
+      <tr>
+        <td style="${cell} font-weight: bold;">Arrivée</td>
+        <td style="${cell}">${arrival}</td>
+      </tr>
+      <tr>
+        <td style="${cell} font-weight: bold;">Départ</td>
+        <td style="${cell}">${departure}</td>
+      </tr>${extraRows}
+      <tr>
+        <td style="${cell} font-weight: bold;">Estimation</td>
+        <td style="${cell} font-weight: bold; color: #1e3a5f;">${estimate}</td>
+      </tr>
+    </table>
+
+    <div style="margin-top: 20px; background: white; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0;">
+      <p style="font-weight: bold; margin: 0 0 8px;">Message :</p>
+      <p style="margin: 0; white-space: pre-wrap; color: #475569;">${message}</p>
+    </div>
+
+    <div style="margin-top: 20px; text-align: center;">
+      <a href="mailto:${mailto}?subject=${encodeURIComponent("Réponse à votre demande de réservation - Île-aux-Moines")}"
+         style="display: inline-block; background: #1e3a5f; color: white; padding: 12px 28px; border-radius: 999px; text-decoration: none; font-weight: bold;">
+        Répondre à ${name}
+      </a>
+    </div>
+  </div>
+
+  <div style="padding: 16px; text-align: center; font-size: 12px; color: #94a3b8;">
+    Notification automatique — location-ile-aux-moines.fr
+  </div>
+</div>
+    `.trim();
+
+    const subject = `📨 Nouvelle demande de réservation Ile Aux Moines : ${subjectText(data.name, 80)} (${subjectText(data.arrival, 40) || "Non précisée"} → ${subjectText(data.departure, 40) || "Non précisée"})`;
+
+    return { subject, html };
+}
+
+module.exports = { escapeHtml, optionsSummary, buildConfirmationEmail, buildNotificationEmail };
