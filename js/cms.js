@@ -153,8 +153,8 @@ export async function initCMS() {
             SITE_CONFIG.contact = {
                 email: contactRecord.email,
                 phone: contactRecord.phone,
-                name: contactRecord.name,
-                airbnbUrl: contactRecord.airbnbUrl
+                name: contactRecord.name
+                // airbnbUrl is private (hidden field): the iCal proxy reads it server-side
             };
 
         }
