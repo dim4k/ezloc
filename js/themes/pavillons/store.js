@@ -143,7 +143,7 @@ function computeFullUntil() {
 /** Loads the Airbnb calendar once; the UI stays usable if it fails. */
 export async function loadAvailability() {
     try {
-        const dates = await fetchBookedDates(SITE_CONFIG.contact?.airbnbUrl);
+        const dates = await fetchBookedDates();
         booking.set({ booked: new Set(dates.map(toDateKey)) });
         booking.set({ fullUntil: computeFullUntil() });
     } catch (error) {

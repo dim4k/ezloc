@@ -140,7 +140,7 @@ Here are the different sections you can modify via the administration interface:
 *   **email**: Email for receiving requests.
 *   **phone**: Displayed phone number.
 *   **name**: Contact name.
-*   **airbnbUrl**: Link to Airbnb calendar (optional).
+*   **airbnbUrl**: Airbnb iCal export URL (optional), used to grey out booked dates. The server fetches it through `/api/ical-proxy` (cached 10 minutes); only `https` Airbnb hosts are accepted, add other iCal hosts with `ICAL_ALLOWED_HOSTS` (e.g. `www.abritel.fr,admin.booking.com`).
 
 
 ### 10. `faq` (Frequently Asked Questions)

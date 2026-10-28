@@ -15,7 +15,7 @@ export class ContactSection extends BaseComponent {
 
     async fetchAvailability() {
         try {
-            this.bookedDates = await fetchBookedDates(this.config.contact.airbnbUrl);
+            this.bookedDates = await fetchBookedDates();
             this.updateCalendarDates();
         } catch (error) {
             console.error("Error fetching Airbnb calendar:", error);

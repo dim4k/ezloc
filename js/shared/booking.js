@@ -19,16 +19,13 @@ export function toDateKey(date) {
 }
 
 /**
- * Fetches the booked days from the Airbnb calendar.
- * @param {string} calendarUrl - Airbnb iCal export URL.
+ * Fetches the booked days from the Airbnb calendar configured in PocketBase (contact.airbnbUrl).
  * @returns {Promise<Date[]>} Booked days (empty when no calendar is configured).
  */
-export async function fetchBookedDates(calendarUrl) {
-    if (!calendarUrl) return [];
-
-    // Use local PocketBase proxy to avoid CORS and external dependency issues
-    const proxyUrl = `${PB_URL}/api/ical-proxy?url=${encodeURIComponent(calendarUrl)}&t=${Date.now()}`;
-    const response = await fetch(proxyUrl);
+export async function fetchBookedDates() {
+    // Local PocketBase proxy: avoids CORS, and the server picks the calendar URL itself
+    const response = await fetch(`${PB_URL}/api/ical-proxy`);
+    if (response.status === 404) return [];
     if (!response.ok) throw new Error(`Proxy error: ${response.status}`);
 
     const icalData = await response.text();
