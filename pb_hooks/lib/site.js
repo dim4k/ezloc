@@ -15,6 +15,7 @@ const LISTS = {
     stay_rules: "created",
     booking_options: "order",
     hero_slides: "order",
+    reviews: "-date",
 };
 
 const COLLECTIONS = SINGLES.concat(Object.keys(LISTS), ["pages"]);

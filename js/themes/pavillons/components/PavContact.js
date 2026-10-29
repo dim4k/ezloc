@@ -191,7 +191,7 @@ export class PavContact extends BaseComponent {
             <section id="reserver" class="bg-pav-navy py-20 text-white md:py-32">
                 <div class="mx-auto max-w-[1360px] px-5 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] md:items-start md:gap-16 md:px-10">
                     <div>
-                        ${sectionHeader({ num: "06", eyebrow: nav.book, title: labels.title, dark: true })}
+                        ${sectionHeader({ num: "07", eyebrow: nav.book, title: labels.title, dark: true })}
                         <p class="-mt-3 mb-8 text-[15px] leading-relaxed text-pav-muted-dark md:-mt-6 md:mb-10 md:text-lg">
                             ${(labels.subtitle || "").replace("{name}", contact.name || "")}
                         </p>

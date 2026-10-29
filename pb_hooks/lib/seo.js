@@ -84,6 +84,12 @@ const fmtDay = (str) => {
     return day && month ? `${day === 1 ? "1er" : day} ${MONTHS[month - 1]}` : str;
 };
 
+/** "2025-07-14 00:00:00.000Z" → "juillet 2025" */
+const monthYear = (value) => {
+    const match = /^(\d{4})-(\d{2})/.exec(value || "");
+    return match ? `${MONTHS[parseInt(match[2], 10) - 1]} ${match[1]}` : "";
+};
+
 const dayKey = (str) => {
     const { day, month } = parseDay(str);
     return (month || 0) * 100 + (day || 0);
@@ -333,6 +339,19 @@ function contentHtml(data, f) {
             ${map.subtitle ? `<p>${esc(map.subtitle)}</p>` : ""}
             <p>${paragraphs(f.location.address).map(esc).join("<br>")}</p>
             ${list(map.nearbyList || [])}
+        </section>`);
+    }
+
+    const reviews = (data.reviews || []).filter((review) => review.author && review.text);
+    if (reviews.length) {
+        sections.push(`
+        <section>
+            <h2>${esc((labels.reviews && labels.reviews.title) || "Avis de nos voyageurs")}</h2>
+            ${reviews.map((review) => {
+                const meta = [review.author, monthYear(review.date), review.source, review.rating ? `${review.rating}/5` : ""].filter(Boolean);
+                return `
+            <figure><blockquote>${htmlParagraphs(review.text)}</blockquote><figcaption>${esc(meta.join(" · "))}</figcaption></figure>`;
+            }).join("")}
         </section>`);
     }
 

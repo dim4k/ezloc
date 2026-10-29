@@ -64,6 +64,7 @@ const LISTS = [
     ['stay_rules', 'created'],
     ['booking_options', 'order'],
     ['hero_slides', 'order'],
+    ['reviews', '-date'],
     ['pages', 'title']
 ];
 
@@ -267,7 +268,18 @@ export async function initCMS() {
                 caption: s.caption || ""
             }));
 
-        // 14. Published pages (legal notice, privacy policy), linked from the footer
+        // 14. Guest reviews, newest stay first
+        SITE_CONFIG.reviews = (data.reviews || [])
+            .filter(r => r.author && r.text)
+            .map(r => ({
+                author: r.author,
+                text: r.text,
+                rating: r.rating || null,
+                date: r.date,
+                source: r.source
+            }));
+
+        // 15. Published pages (legal notice, privacy policy), linked from the footer
         SITE_CONFIG.pages = (data.pages || []).map(p => ({ slug: p.slug, title: p.title }));
 
         console.log("✅ CMS Data received and mapped.");

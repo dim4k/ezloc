@@ -69,7 +69,7 @@ The `index.html` file is generic and contains placeholders (`{{SEO_TITLE}}`, `{{
 At Docker container startup, a script (`entrypoint.sh`) injects the values of these environment variables. `SEO_URL` (with its trailing slash) is also the canonical URL.
 
 The site is rendered in the browser, and search engines or AI crawlers that do not run JavaScript would receive an empty page. So `pb_hooks/seo.pb.js` renders the home page on the server, from the CMS:
-*   **Content**: the CMS texts as plain HTML inside `<app-root>` (one `<h1>`, the rooms, activities, prices, map details, FAQ, contact). The app replaces it on start; it only shows if the app has not started after 4 seconds.
+*   **Content**: the CMS texts as plain HTML inside `<app-root>` (one `<h1>`, the rooms, activities, prices, map details, reviews, FAQ, contact). The app replaces it on start; it only shows if the app has not started after 4 seconds.
 *   **Head**: favicon (`site_identity.favicon`), share image (the first `hero_slides` photo, else `welcome.image`, cropped to 1200×630), font preloads, and the structured data: `VacationRental` and `FAQPage` (JSON-LD).
 *   **Data**: the CMS content is inlined in the page, so the app needs no API call. `/api/site` returns the same content in one response.
 *   **Sitemap**: `/sitemap.xml` with the photos and the published pages. `robots.txt` (generated at startup) points to it.
@@ -179,6 +179,16 @@ Here are the different sections you can modify via the administration interface:
 *   **order**: Display order.
 
 > Collections 12–13 and the optional fields are added by `pb_migrations/1792966000_booking_rules_options.js`. The site works the same without them (an older database simply returns empty lists).
+
+### 14. `reviews` (Guest Reviews) *(optional)*
+*Shown by both themes between the map and the FAQ, newest stay first; empty = no section. Typed in the dashboard (copied from Airbnb, Google…): there is no automatic import.*
+*   **author**: Guest name, e.g. "Marie, Nantes".
+*   **text**: The review (plain text, line breaks kept).
+*   **rating** *(optional)*: 1 to 5 stars.
+*   **date** *(optional)*: Stay date, shown as "juillet 2025".
+*   **source** *(optional)*: Where the review comes from, e.g. "Airbnb".
+
+Section titles: `labels.reviews.title` (and `labels.reviews.subtitle` for `classic`, `labels.nav.reviews` for the `pavillons` eyebrow). Reviews are not declared in the structured data: Google ignores the reviews a business publishes about itself.
 
 ---
 

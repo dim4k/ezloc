@@ -7,6 +7,7 @@ import { WelcomeSection } from "./components/WelcomeSection.js";
 import { HouseSection } from "./components/HouseSection.js";
 import { ActivitiesSection } from "./components/ActivitiesSection.js";
 import { MapSection } from "./components/MapSection.js";
+import { ReviewsSection } from "./components/ReviewsSection.js";
 import { FaqSection } from "./components/FaqSection.js";
 import { ContactSection } from "./components/ContactSection.js";
 import { SiteFooter } from "./components/SiteFooter.js";
@@ -20,6 +21,7 @@ export default {
             <house-section></house-section>
             <activities-section></activities-section>
             <map-section></map-section>
+            <reviews-section></reviews-section>
             <faq-section></faq-section>
             <contact-section></contact-section>
         </main>
@@ -33,6 +35,7 @@ export default {
         "house-section": HouseSection,
         "activities-section": ActivitiesSection,
         "map-section": MapSection,
+        "reviews-section": ReviewsSection,
         "faq-section": FaqSection,
         "contact-section": ContactSection,
         "site-footer": SiteFooter,

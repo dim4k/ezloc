@@ -14,7 +14,7 @@ export class PavFaq extends BaseComponent {
         this.innerHTML = `
             <section id="faq" class="bg-pav-chalk py-20 md:py-32">
                 <div class="mx-auto max-w-[1360px] px-5 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] md:items-start md:gap-16 md:px-10">
-                    ${sectionHeader({ num: "05", eyebrow: nav.faq || "FAQ", title: faqLabels.title || "Questions fréquentes" })}
+                    ${sectionHeader({ num: "06", eyebrow: nav.faq || "FAQ", title: faqLabels.title || "Questions fréquentes" })}
                     <div class="pav-reveal rounded-2xl bg-white px-5 md:px-8">
                         ${faqs.map((item, i) => `
                             <div class="pav-faq-item${i === 0 ? " is-open" : " border-t border-pav-sand"}">

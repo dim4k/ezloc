@@ -10,6 +10,7 @@ import { PavHouse } from "./components/PavHouse.js";
 import { PavActivities } from "./components/PavActivities.js";
 import { PavPricing } from "./components/PavPricing.js";
 import { PavMap } from "./components/PavMap.js";
+import { PavReviews } from "./components/PavReviews.js";
 import { PavFaq } from "./components/PavFaq.js";
 import { PavContact } from "./components/PavContact.js";
 import { PavFooter } from "./components/PavFooter.js";
@@ -29,6 +30,7 @@ export default {
             <pav-activities></pav-activities>
             <pav-pricing></pav-pricing>
             <pav-map></pav-map>
+            <pav-reviews></pav-reviews>
             <pav-faq></pav-faq>
             <pav-contact></pav-contact>
         </main>
@@ -46,6 +48,7 @@ export default {
         "pav-activities": PavActivities,
         "pav-pricing": PavPricing,
         "pav-map": PavMap,
+        "pav-reviews": PavReviews,
         "pav-faq": PavFaq,
         "pav-contact": PavContact,
         "pav-footer": PavFooter,
