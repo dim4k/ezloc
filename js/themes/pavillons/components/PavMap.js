@@ -15,6 +15,7 @@ export class PavMap extends BaseComponent {
         if (!mapEl || this.map || typeof L === "undefined") return;
 
         const { lat, lng, mapZoom } = this.config.location;
+        const desktop = window.matchMedia("(min-width: 768px)").matches;
 
         this.map = L.map(mapEl, {
             scrollWheelZoom: false,
@@ -22,10 +23,10 @@ export class PavMap extends BaseComponent {
             tap: false,
             fadeAnimation: false, // Fix for tile rendering artifacts
             zoomAnimation: false, // Fix for tile rendering artifacts
-        }).setView([lat, lng], mapZoom || 13);
+        }).setView([lat, lng], (mapZoom || 13) - (desktop ? 0 : 1)); // The mobile map is much narrower: zoom out to show the same area
 
         // On desktop the info card covers the left of the map: shift the house to the right
-        if (window.matchMedia("(min-width: 768px)").matches) {
+        if (desktop) {
             this.map.panBy([-220, 0], { animate: false });
         }
 

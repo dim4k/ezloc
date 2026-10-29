@@ -51,7 +51,7 @@ export class PavPricing extends BaseComponent {
             .join(" ; ");
 
         const conditions = [
-            ...(pricing.cleaningFee != null ? [`Frais de ménage : ${fmtPrice(pricing.cleaningFee)} par séjour`] : []),
+            ...(pricing.cleaningFee > 0 ? [`Frais de ménage : ${fmtPrice(pricing.cleaningFee)} par séjour`] : []),
             ...(pricing.details || []),
         ];
 

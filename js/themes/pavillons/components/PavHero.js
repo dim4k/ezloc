@@ -215,9 +215,6 @@ export class PavHero extends BaseComponent {
                             </div>
                             <button type="button" data-cta class="pav-btn rounded px-6 text-base"></button>
                         </div>
-                        <a href="#maison" class="pav-in flex items-center gap-3 whitespace-nowrap text-xs font-semibold uppercase tracking-[0.2em] text-white" style="--d:1s">
-                            <span class="pav-cue" aria-hidden="true"><span></span></span>${hero.discover || ""}
-                        </a>
                     </div>
                 </div>
             </section>

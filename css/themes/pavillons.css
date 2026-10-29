@@ -176,20 +176,6 @@ html[data-theme="pavillons"] :focus-visible {
 }
 .pav-word > span { display: inline-block; }
 
-.pav-cue {
-    position: relative;
-    display: block;
-    width: 2px;
-    height: 48px;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.25);
-}
-.pav-cue > span {
-    position: absolute;
-    inset: 0;
-    background: #F2C230;
-}
-
 /* --- House explorer --- */
 .pav-tab[aria-selected="true"] {
     background: #0C1823;
@@ -434,12 +420,6 @@ html.pav-motion .pav-lightbox[open] { animation: pav-backdrop 0.25s ease; }
 @keyframes pav-rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
 @keyframes pav-up { from { transform: translateY(105%); } to { transform: none; } }
 @keyframes pav-flutter { 0%, 100% { transform: skewY(0deg) scaleX(1); } 50% { transform: skewY(-6deg) scaleX(0.95); } }
-@keyframes pav-cue {
-    0% { transform: scaleY(0); transform-origin: top; }
-    45% { transform: scaleY(1); transform-origin: top; }
-    55% { transform: scaleY(1); transform-origin: bottom; }
-    100% { transform: scaleY(0); transform-origin: bottom; }
-}
 @keyframes pav-pulse { from { transform: scale(0.6); opacity: 0.7; } to { transform: scale(2.6); opacity: 0; } }
 @keyframes pav-fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes pav-menu { from { clip-path: circle(0% at 92% 4%); } to { clip-path: circle(150% at 92% 4%); } }
@@ -464,7 +444,6 @@ html.pav-motion .pav-flag {
 }
 html.pav-motion .pav-flag:nth-child(2) { animation-delay: 0.12s, 1.6s; }
 html.pav-motion .pav-flag:nth-child(3) { animation-delay: 0.24s, 1.9s; }
-html.pav-motion .pav-cue > span { animation: pav-cue 2.2s ease-in-out infinite; }
 html.pav-motion .pav-pulse { animation: pav-pulse 2.4s ease-out infinite; }
 html.pav-motion .pav-fade { animation: pav-fade 0.45s ease both; }
 html.pav-motion .pav-menu.is-open { animation: pav-menu 0.55s cubic-bezier(0.6, 0, 0.2, 1) both; }
