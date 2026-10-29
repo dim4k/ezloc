@@ -216,6 +216,23 @@ section[id] {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 
+/* --- Guest reviews (js/shared/reviews.js), both themes ---
+   One row scrolled sideways; long texts folded to about 8 lines until "Lire la suite". */
+[data-reviews-track] {
+    scrollbar-width: none;
+}
+
+[data-reviews-track]::-webkit-scrollbar {
+    display: none;
+}
+
+.review-text.is-folded {
+    max-height: 13rem;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent);
+    mask-image: linear-gradient(to bottom, #000 70%, transparent);
+}
+
 /* --- Server-rendered content (pb_hooks/lib/seo.js) ---
    The CMS content as plain HTML for search engines and AI crawlers. The app replaces it on start;
    it only becomes visible if the app has not started after a few seconds (JavaScript off or failing). */
