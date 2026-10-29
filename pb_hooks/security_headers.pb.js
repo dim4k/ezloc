@@ -26,6 +26,13 @@ routerUse((e) => {
         ].join("; "));
     }
 
+    // Scripts and styles are revalidated on every visit (304 when unchanged): their URLs carry no version,
+    // so a cached copy could mix files of two deploys (e.g. a new index.html with an old module)
+    const path = e.request.url.path;
+    if ((path.startsWith("/js/") || path.startsWith("/css/")) && !path.startsWith("/css/vendor/fonts/")) {
+        headers.set("Cache-Control", "no-cache");
+    }
+
     headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
     headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
 
