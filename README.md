@@ -89,6 +89,7 @@ Here are the different sections you can modify via the administration interface:
 *   **tagline**: Slogan.
 *   **description**: Short description for SEO.
 *   **favicon**: Site icon.
+*   **apple_touch_icon** *(optional)*: Home screen icon on iPhone and iPad (square PNG, 180×180, no transparency: iOS rounds the corners itself).
 *   **labels**: Interface texts (buttons, menus) in JSON format.
 *   **external_links** *(optional)*: Other pages about the same house (JSON list of URLs: Airbnb listing, Google Maps…), declared as `sameAs` in the structured data.
 

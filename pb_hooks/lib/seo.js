@@ -154,6 +154,7 @@ function facts(data, base) {
         identity, welcome, house, location, pricing, labels, name, heading, address, periods, images, shareImage,
         description: env("SEO_DESCRIPTION") || plainText(identity.description),
         favicon: identity.favicon ? fileUrl(base, identity, identity.favicon) : envUrl(base, env("SEO_FAVICON")),
+        appleTouchIcon: fileUrl(base, identity, identity.apple_touch_icon),
         priceRange: prices.length
             ? (Math.min.apply(null, prices) === Math.max.apply(null, prices)
                 ? `${fmtPrice(prices[0])} / nuit`
@@ -245,6 +246,7 @@ function headTags(data, f, base) {
     const tags = [`<meta property="og:site_name" content="${esc(f.name)}" />`];
 
     if (f.favicon) tags.push(`<link rel="icon" href="${esc(f.favicon)}" />`);
+    if (f.appleTouchIcon) tags.push(`<link rel="apple-touch-icon" href="${esc(f.appleTouchIcon)}" />`);
     if (f.shareImage) {
         tags.push(`<meta property="og:image" content="${esc(f.shareImage.url)}" />`);
         if (f.shareImage.sized) tags.push('<meta property="og:image:width" content="1200" />', '<meta property="og:image:height" content="630" />');
@@ -423,6 +425,10 @@ function faviconUrl(app, base) {
     return facts(loadSiteData(app), base).favicon;
 }
 
+function appleTouchIconUrl(app, base) {
+    return facts(loadSiteData(app), base).appleTouchIcon;
+}
+
 /** Published legal page, or null. */
 function legalPage(app, base, slug) {
     let page;
@@ -443,6 +449,7 @@ function legalPage(app, base, slug) {
     <title>${esc(title)} · ${esc(f.name)}</title>
     <link rel="canonical" href="${esc(base + slug)}" />
     ${f.favicon ? `<link rel="icon" href="${esc(f.favicon)}" />` : ""}
+    ${f.appleTouchIcon ? `<link rel="apple-touch-icon" href="${esc(f.appleTouchIcon)}" />` : ""}
     <link rel="stylesheet" href="/css/page.css" />
 </head>
 <body>
@@ -482,4 +489,4 @@ function notFoundPage(app, base) {
 </html>`;
 }
 
-module.exports = { LEGAL_SLUGS, siteUrl, homePage, sitemap, faviconUrl, legalPage, notFoundPage, decodeEntities, paragraphs };
+module.exports = { LEGAL_SLUGS, siteUrl, homePage, sitemap, faviconUrl, appleTouchIconUrl, legalPage, notFoundPage, decodeEntities, paragraphs };

@@ -33,6 +33,16 @@ routerAdd("GET", "/favicon.ico", (e) => {
     return e.redirect(302, url);
 });
 
+// iOS asks for these when a visitor adds the site to the home screen, whatever the page declares
+["/apple-touch-icon.png", "/apple-touch-icon-precomposed.png"].forEach((path) => {
+    routerAdd("GET", path, (e) => {
+        const seo = require(`${__hooks}/lib/seo.js`);
+        const url = seo.appleTouchIconUrl($app, seo.siteUrl(e));
+        if (!url) throw new NotFoundError();
+        return e.redirect(302, url);
+    });
+});
+
 // Legal pages (collection "pages"), once published in the dashboard
 ["mentions-legales", "confidentialite"].forEach((slug) => {
     routerAdd("GET", `/${slug}`, (e) => {
