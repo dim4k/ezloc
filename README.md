@@ -204,6 +204,8 @@ Section titles: `labels.reviews.title` (and `labels.reviews.subtitle` for `class
 *   `pb_hooks/on_message_created.pb.js`: notification to the owner (now includes guests and options).
 *   `pb_hooks/on_message_confirmation.pb.js`: confirmation to the guest (dates, estimate, conditions, address). The guest's free-text message is not echoed, user input is escaped and options are checked against `booking_options`, so the form cannot be used to send arbitrary content. The owner notification escapes every field too. The header image uses the PocketBase *Application URL* setting.
 
+**Anonymization** (`pb_hooks/anonymize_messages.pb.js`): the name, email and phone of booking requests older than `MESSAGES_ANONYMIZE_DAYS` days (default `30`) are replaced by `Anonyme` / `anonyme@anonyme.invalid` / empty, every night at 3:00 and at startup. Dates, message, estimate and options are kept. Set `0` to keep requests as they are.
+
 ---
 
 ## 🛡️ Anti-abuse
